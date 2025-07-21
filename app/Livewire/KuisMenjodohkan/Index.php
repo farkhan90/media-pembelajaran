@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Livewire\KuisMenjodohkan;
+
+use App\Models\Kelas;
+use App\Models\KuisMenjodohkan;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
+
+#[Layout('components.layouts.app')]
+class Index extends Component
+{
+    use WithPagination;
+
+    // Properti untuk Filter
+    #[Url(as: 'kelasId', keep: true)]
+    public ?string $kelasId = null;
+
+    // Properti untuk Modal dan Form
+    public bool $kuisModal = false;
+    public bool $isEditMode = false;
+    public ?KuisMenjodohkan $kuis = null;
+
+    // Properti untuk field form
+    public string $judul = '';
+    public string $deskripsi = '';
+    public string $status = 'Draft';
+
+    // Properti Tabel
+    public string $search = '';
+    public array $headers;
+
+    public function mount(): void
+    {
+        $this->headers = [
+            ['key' => 'judul', 'label' => 'Judul Kuis'],
+            ['key' => 'deskripsi', 'label' => 'Deskripsi'],
+            ['key' => 'status', 'label' => 'Status', 'class' => 'w-32 text-center'],
+            ['key' => 'item_pertanyaans_count', 'label' => 'Jumlah Pasangan', 'class' => 'w-32 text-center'],
+        ];
+    }
+
+    // Opsi Kelas berdasarkan Role (logika yang sama)
+    #[Computed(cache: true)]
+    public function kelasOptions()
+    {
+        $user = Auth::user();
+        $query = Kelas::query();
+
+        if ($user->role === 'Guru') {
+            $query->where('guru_pengampu_id', $user->id);
+        }
+
+        return $query->with('sekolah')->orderBy('nama')->get()->map(function ($kelas) {
+            return [
+                'id' => $kelas->id,
+                'name' => "{$kelas->sekolah->nama} - {$kelas->nama}"
+            ];
+        });
+    }
+
+    // Daftar kuis berdasarkan filter kelas
+    #[Computed]
+    public function kuises()
+    {
+        if (!$this->kelasId) {
+            return KuisMenjodohkan::where('id', false)->paginate(10); // Trik paginator kosong
+        }
+
+        return KuisMenjodohkan::query()
+            ->withCount('itemPertanyaans') // Menghitung jumlah pasangan soal
+            ->where('kelas_id', $this->kelasId)
+            ->when($this->search, fn($q) => $q->where('judul', 'like', "%{$this->search}%"))
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+    }
+
+    public function updatedKelasId()
+    {
+        $this->resetPage();
+    }
+
+    public function create(): void
+    {
+        $this->resetForm();
+        $this->isEditMode = false;
+        $this->kuisModal = true;
+    }
+
+    public function edit(string $kuisId): void
+    {
+        $kuis = KuisMenjodohkan::find($kuisId);
+        if (!$kuis) return;
+
+        $this->resetForm();
+        $this->isEditMode = true;
+
+        $this->kuis = $kuis;
+        $this->judul = $kuis->judul;
+        $this->deskripsi = $kuis->deskripsi;
+        $this->status = $kuis->status;
+
+        $this->kuisModal = true;
+    }
+
+    public function save(): void
+    {
+        $validated = $this->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'status' => 'required|in:Draft,Published',
+        ]);
+
+        $validated['kelas_id'] = $this->kelasId;
+
+        if ($this->isEditMode) {
+            $this->kuis->update($validated);
+            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Kuis berhasil diperbarui.', 'icon' => 'success']);
+        } else {
+            KuisMenjodohkan::create($validated);
+            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Kuis berhasil dibuat.', 'icon' => 'success']);
+        }
+
+        $this->closeModal();
+    }
+
+    #[On('delete-confirmed')]
+    public function delete(string $id): void
+    {
+        $kuis = KuisMenjodohkan::find($id);
+        if ($kuis) {
+            $kuis->delete();
+            $this->dispatch('swal', ['title' => 'Dihapus!', 'text' => "Kuis berhasil dihapus.", 'icon' => 'success']);
+        }
+    }
+
+    public function closeModal(): void
+    {
+        $this->kuisModal = false;
+        $this->resetForm();
+    }
+
+    private function resetForm(): void
+    {
+        $this->reset(['judul', 'deskripsi', 'status', 'kuis', 'isEditMode']);
+        $this->resetErrorBag();
+    }
+
+    public function render()
+    {
+        return view('livewire.kuis-menjodohkan.index');
+    }
+}
