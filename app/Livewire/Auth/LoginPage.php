@@ -26,7 +26,7 @@ class LoginPage extends Component
 
         if (Auth::attempt($credentials)) {
             session()->regenerate();
-            $this->redirect('/dashboard', navigate: true);
+            $this->redirect('/selamat-datang', navigate: true);
             return;
         }
 

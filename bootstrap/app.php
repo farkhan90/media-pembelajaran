@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+        $middleware->redirectGuestsTo(fn() => route('login'));
+        $middleware->redirectUsersTo('/selamat-datang');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

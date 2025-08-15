@@ -1,6 +1,51 @@
-<div class="bg-gray-100 min-h-screen p-4 md:p-8 font-sans">
+<div class="relative w-full min-h-screen p-4 font-sans bg-cover bg-center"
+    style="background-image: url('{{ asset('assets/img/backgrounds/quiz-bg.jpg') }}');">
+    <div class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden" x-data x-init="// Animasikan semua elemen dengan kelas 'clipart'
+    gsap.from('.clipart', {
+        scale: 0,
+        opacity: 0,
+        rotation: () => gsap.utils.random(-180, 180),
+        stagger: 0.1,
+        duration: 1,
+        ease: 'back.out(1.7)',
+        delay: 0.5
+    })">
+        {{-- Tempatkan clipart di posisi acak dengan rotasi --}}
+        <img src="{{ asset('assets/img/cliparts/pencil.svg') }}" alt="Clipart Pensil"
+            class="clipart absolute w-32 -rotate-12" style="top: 10%; left: 5%;">
+        <img src="{{ asset('assets/img/cliparts/eraser.svg') }}" alt="Clipart Penghapus"
+            class="clipart absolute w-20 rotate-12" style="top: 80%; left: 15%;">
+        <img src="{{ asset('assets/img/cliparts/ruler.svg') }}" alt="Clipart Penggaris"
+            class="clipart absolute w-40 rotate-[25deg]" style="top: 15%; right: 10%;">
+        <img src="{{ asset('assets/img/cliparts/book.svg') }}" alt="Clipart Buku"
+            class="clipart absolute w-28 -rotate-[15deg]" style="bottom: 8%; right: 5%;">
+        <img src="{{ asset('assets/img/cliparts/paperclip.svg') }}" alt="Clipart Penjepit Kertas"
+            class="clipart absolute w-16 rotate-45" style="top: 50%; left: 20%;">
+    </div>
 
-    <x-header :title="$kuis->judul" :subtitle="$kuis->deskripsi" separator class="mb-8" />
+    <x-header :title="$kuis->judul" separator class="mb-8 text-white" />
+    <div class="max-w-3xl mx-auto mb-8 flex items-center gap-4" x-data x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'elastic.out(1, 0.5)', delay: 0.3 })">
+        {{-- Ikon Karakter / Maskot --}}
+        <div class="flex-shrink-0">
+            {{-- Anda bisa mengganti ikon ini dengan gambar maskot jika punya --}}
+            <x-icon name="o-light-bulb" class="w-20 h-20 text-yellow-400 drop-shadow-lg" />
+        </div>
+
+        {{-- Gelembung Ucapan (Speech Bubble) --}}
+        <div class="relative bg-white p-6 rounded-2xl shadow-lg text-gray-700 text-lg font-semibold">
+            {{-- Segitiga kecil untuk menunjuk ke ikon --}}
+            <div
+                class="absolute -left-4 top-1/2 -translate-y-1/2 w-0 h-0 
+                    border-t-[15px] border-t-transparent
+                    border-r-[20px] border-r-white
+                    border-b-[15px] border-b-transparent">
+            </div>
+
+            Ayo, Petualang Cerdas! <br>
+            Bacalah kata di sebelah <span class="text-blue-500 font-bold">kiri</span>, lalu cari pasangannya yang tepat
+            di sebelah <span class="text-pink-500 font-bold">kanan</span>. Klik untuk menghubungkan!
+        </div>
+    </div>
 
     <div x-data="{
         pasangan: @entangle('pasanganSiswa'),
@@ -122,7 +167,7 @@
     </div>
 
     {{-- TOMBOL AKSI --}}
-    <div class="mt-12 flex justify-center items-center gap-4">
+    <div class="mt-12 flex justify-center items-center gap-4 text-white">
         <x-button label="Reset Jawaban" icon="o-arrow-path" class="btn-ghost" wire:click="resetSemuaJawaban" spinner />
         <x-button label="Selesaikan Kuis" class="btn-primary btn-lg" wire:click="selesaikanKuis"
             spinner="selesaikanKuis" :disabled="count($pasanganSiswa) < $itemPertanyaans->count()" />

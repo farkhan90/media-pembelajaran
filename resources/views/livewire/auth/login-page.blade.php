@@ -1,4 +1,4 @@
-<div x-data="{}" x-init="gsap.from($el, { scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' })">
+<div x-data="{}" x-init="gsap.from($el, { y: 50, opacity: 0, duration: 0.7, ease: 'power2.out' })">
     {{-- KARTU UTAMA DENGAN DUA KOLOM --}}
     <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row overflow-hidden">
 

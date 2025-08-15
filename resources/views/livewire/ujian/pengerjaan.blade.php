@@ -1,4 +1,4 @@
-<div x-data="{
+<div class="bg-indigo-100" x-data="{
     sisaWaktu: {{ (int) max(0, $ujian->waktu_menit * 60 - now()->diffInSeconds($histori->waktu_mulai)) }},
     timer: null,
     init() {
@@ -26,7 +26,7 @@
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 }" x-init="init()">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full p-4 ">
 
         {{-- Kolom Utama (Soal) --}}
         <div class="lg:col-span-9 flex flex-col">

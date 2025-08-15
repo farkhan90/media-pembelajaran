@@ -2,6 +2,7 @@
 
 namespace App\Livewire\KuisMenjodohkan;
 
+use App\Livewire\Pembelajaran\PenilaianRunner;
 use App\Models\HistoriKuis;
 use App\Models\ItemJawaban;
 use App\Models\KuisMenjodohkan;
@@ -25,7 +26,10 @@ class Pengerjaan extends Component
     // State untuk UI klik
     public ?string $selectedPertanyaanId = null;
 
-    public function mount(KuisMenjodohkan $kuisMenjodohkan)
+    public ?string $parentRunnerId = null;
+    public ?string $historiUjianId = null;
+
+    public function mount(KuisMenjodohkan $kuisMenjodohkan, ?string $parentRunnerId = null, ?string $historiUjianId = null)
     {
         $this->kuis = $kuisMenjodohkan;
         $user = auth()->user();
@@ -52,6 +56,9 @@ class Pengerjaan extends Component
 
         $this->loadItems();
         $this->loadJawaban();
+        $this->kuis = $kuisMenjodohkan;
+        $this->parentRunnerId = $parentRunnerId;
+        $this->historiUjianId = $historiUjianId;
     }
 
     protected function loadItems()
@@ -136,6 +143,7 @@ class Pengerjaan extends Component
 
     public function selesaikanKuis()
     {
+        // dd($this->parentRunnerId, $this->getId());
         $jawabanTersimpan = $this->histori->jawabanJodohSiswas;
         $jumlahBenar = 0;
 
@@ -158,12 +166,24 @@ class Pengerjaan extends Component
         session()->forget('urutan_pertanyaan_kuis_' . $this->histori->id);
         session()->forget('urutan_jawaban_kuis_' . $this->histori->id);
 
-        $this->dispatch('kuis-telah-selesai', [
-            'title' => 'Kuis Selesai!',
-            'text' => 'Skor Anda adalah: ' . round($skor, 2),
-            'icon' => 'success',
-            'redirectUrl' => route('kuis.list')
-        ]);
+        if ($this->parentRunnerId) {
+            // Panggil metode di runner dengan semua data yang dibutuhkan
+            $this->dispatch(
+                'kuisMenjodohkanSelesai',
+                targetRunnerId: $this->parentRunnerId, // Kirim ID target
+                historiUjianId: $this->historiUjianId,
+                historiKuisId: $this->histori->id,
+                skorKuis: $skor
+            );
+        } else {
+            // Redirect biasa jika mandiri
+            $this->dispatch('kuis-telah-selesai', [
+                'title' => 'Kuis Selesai!',
+                'text' => 'Skor Anda adalah: ' . round($skor, 2),
+                'icon' => 'success',
+                'redirectUrl' => route('kuis.list')
+            ]);
+        }
     }
 
     public function render()

@@ -19,7 +19,7 @@ class Logout extends Component
     {
         // Inline blade view
         return <<<'HTML'
-        <x-button label="Logout" icon="o-arrow-left-on-rectangle" wire:click="logout" class="btn-ghost btn-sm" responsive />
+        <x-button label="Logout" icon="o-arrow-left-on-rectangle" wire:click="logout" class="btn-sm btn-outline btn-error" responsive />
         HTML;
     }
 }

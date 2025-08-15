@@ -18,6 +18,7 @@
     "dependencies": {
         "chart.js": "^4.5.0",
         "gsap": "^3.13.0",
+        "split-type": "^0.3.4",
         "sweetalert2": "^11.22.2"
     }
 }

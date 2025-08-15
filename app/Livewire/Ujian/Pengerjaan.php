@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Ujian;
 
+use App\Livewire\Pembelajaran\PenilaianRunner;
 use App\Models\HistoriUjian;
 use App\Models\Ujian;
 use Carbon\Carbon;
@@ -24,7 +25,10 @@ class Pengerjaan extends Component
 
     public bool $rekapModal = false;
 
-    public function mount(Ujian $ujian)
+    // pulau papua
+    public ?string $parentRunnerId = null;
+
+    public function mount(Ujian $ujian, ?string $parentRunnerId = null)
     {
         $this->ujian = $ujian;
         $user = auth()->user();
@@ -53,6 +57,8 @@ class Pengerjaan extends Component
         // Tidak perlu load jawaban lama karena ini adalah pengerjaan baru
         $this->jawabanSiswa = [];
         $this->syncJawabanAktif();
+        $this->ujian = $ujian;
+        $this->parentRunnerId = $parentRunnerId;
     }
 
     // Metode BARU untuk menyinkronkan jawaban
@@ -186,14 +192,19 @@ class Pengerjaan extends Component
         session()->forget('urutan_soal_' . $this->histori->id);
 
         // Redirect ke halaman hasil
-        // return redirect()->route('ujian.hasil', $this->histori->id);
-        //$this->dispatch('swal', ['title' => 'Selesai!', 'text' => 'Ujian telah selesai. Skor Anda: ' . round($skor, 2), 'icon' => 'success']);
-        $this->dispatch('ujian-telah-selesai', [
-            'title' => 'Ujian Selesai!',
-            'text' => 'Skor Anda adalah: ' . round($skor, 2),
-            'icon' => 'success',
-            'redirectUrl' => route('ujian.list')
-        ]);
+        if ($this->parentRunnerId) {
+            // Jika dijalankan oleh runner, panggil metode di runner
+            $this->dispatch('ujianPilganSelesai', historiId: $this->histori->id)
+                ->to(PenilaianRunner::class, $this->parentRunnerId);
+        } else {
+            // Jika mandiri, lakukan redirect biasa
+            $this->dispatch('ujian-telah-selesai', [
+                'title' => 'Ujian Selesai!',
+                'text' => 'Skor Anda adalah: ' . round($skor, 2),
+                'icon' => 'success',
+                'redirectUrl' => route('ujian.list')
+            ]);
+        }
     }
 
     public function render()

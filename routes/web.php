@@ -17,12 +17,19 @@ use App\Livewire\KuisMenjodohkan\ItemManager as KuisItemManager;
 use App\Livewire\KuisMenjodohkan\Pengerjaan as KuisPengerjaan;
 use App\Livewire\KuisMenjodohkan\Daftar as KuisDaftar;
 use App\Livewire\KuisMenjodohkan\Hasil as KuisHasil;
+use App\Livewire\Pembelajaran\KuisPage;
+use App\Livewire\Pembelajaran\MateriPage;
+use App\Livewire\Pembelajaran\PenilaianLaporan;
+use App\Livewire\Pembelajaran\PenilaianRunner;
+use App\Livewire\Pembelajaran\RefleksiPage;
+use App\Livewire\Pembelajaran\VideoPage;
+use App\Livewire\WelcomePage;
+use App\Livewire\SelamatDatangPage;
+use App\Livewire\PetaPetualanganPage;
 use Illuminate\Support\Facades\Route;
 
 // Halaman landing page publik
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', WelcomePage::class);
 
 // Grup rute untuk tamu (belum login)
 Route::middleware('guest')->group(function () {
@@ -52,6 +59,20 @@ Route::middleware('auth')->group(function () {
         ->name('kuis.items.index')
         ->middleware('role:Admin,Guru');
     Route::get('/hasil-kuis', KuisHasil::class)->name('kuis.hasil');
+
+    // Rute untuk halaman lobi/capaian pembelajaran
+    Route::get('/selamat-datang', SelamatDatangPage::class)->name('selamat-datang');
+
+    // RUTE BARU UNTUK HALAMAN PETA
+    Route::get('/peta-petualangan', PetaPetualanganPage::class)->name('peta-petualangan');
+    Route::prefix('pembelajaran')->name('pembelajaran.')->group(function () {
+        Route::get('/video/{pulau}', VideoPage::class)->name('video');
+        Route::get('/materi/{pulau}', MateriPage::class)->name('materi');
+        Route::get('/refleksi/{pulau}', RefleksiPage::class)->name('refleksi');
+    });
+    Route::get('/laporan-penilaian/{pulau}', PenilaianLaporan::class)
+        ->name('penilaian.laporan')
+        ->middleware('role:Admin,Guru');
 });
 
 Route::middleware(['auth', 'role:Siswa'])->group(function () {
@@ -59,4 +80,5 @@ Route::middleware(['auth', 'role:Siswa'])->group(function () {
     Route::get('/kerjakan-ujian/{ujian}', UjianPengerjaan::class)->name('ujian.kerjakan');
     Route::get('/kuis', KuisDaftar::class)->name('kuis.list');
     Route::get('/kerjakan-kuis/{kuisMenjodohkan}', KuisPengerjaan::class)->name('kuis.kerjakan');
+    Route::get('/penilaian-akhir/{pulau}', PenilaianRunner::class)->name('penilaian.runner');
 });
