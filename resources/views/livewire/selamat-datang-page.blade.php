@@ -82,6 +82,21 @@
                                     teman-teman.
                                 </div>
                             </li>
+                            <li class="flex items-start gap-4">
+                                <x-icon name="o-heart" class="w-8 h-8 text-red-600 flex-shrink-0 mt-1" />
+                                <div>
+                                    <strong>Menghargai</strong> berbagai bentuk keberagaman sesuai budaya, suku bangsa,
+                                    bahasa, agama dan kepercayaannya di lingkungan sekolah.
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <x-icons.handshake class="w-8 h-8 text-accent flex-shrink-0 mt-1" />
+
+                                <div>
+                                    <strong>Menghargai</strong> berbagai bentuk keberagaman sesuai budaya, suku bangsa,
+                                    bahasa, agama dan kepercayaannya di lingkungan masyarakat.
+                                </div>
+                            </li>
                         </ol>
                         <div class="mt-10">
                             <a href="{{ route('peta-petualangan') }}" wire:navigate

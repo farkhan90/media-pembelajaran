@@ -21,12 +21,12 @@ class VideoPage extends Component
     // "Mini-database" untuk konten video statis Anda
     protected array $dataPulau = [
         'sumatera' => [
-            'judul' => 'Video 1: Petualangan di Kerajaan Sriwijaya',
+            'judul' => 'Video 1: Keberagaman Indonesia',
             'file' => 'sumatera.mp4',
             'berikutnya' => 'jawa',
         ],
         'kalimantan' => [
-            'judul' => 'Video 2: Misteri Kerajaan Kutai',
+            'judul' => 'Video 2: Harmoni dalam Keberagaman',
             'file' => 'kalimantan.m4v',
             'berikutnya' => 'sulawesi',
         ],
