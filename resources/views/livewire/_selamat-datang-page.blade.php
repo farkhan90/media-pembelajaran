@@ -1,55 +1,58 @@
 {{-- Ganti seluruh isi file dengan ini --}}
+<div class="relative w-full h-screen overflow-hidden bg-gray-200" {{-- Beri warna fallback --}}>
+    {{-- Gambar Latar Belakang Responsif --}}
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000"
+        style="background-image: url('{{ asset('assets/img/background-petualangan.jpg') }}');" x-data="{ loaded: false }"
+        x-init="const img = new Image();
+        img.src = '{{ asset('assets/img/background-petualangan.jpg') }}';
+        img.onload = () => { loaded = true; }" :class="loaded ? 'opacity-100' : 'opacity-0'"></div>
 
-{{-- Latar belakang tetap di div terluar --}}
-<div class="relative w-full h-screen bg-cover bg-center"
-    style="background-image: url('{{ asset('assets/img/background-petualangan.jpg') }}');">
-    {{-- Overlay gelap --}}
-    <div class="absolute inset-0 bg-opacity-30"></div>
+    {{-- Overlay gradien halus (opsional, tapi mempercantik) --}}
+    <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-white/0"></div>
 
-    {{-- ======================================================= --}}
-    {{--     KONTENER BARU DENGAN FLEXBOX & LAYOUT SCROLLABLE    --}}
-    {{-- ======================================================= --}}
+    {{-- KONTEN UTAMA --}}
+    <div class="relative z-10 h-full flex flex-col p-6 md:p-12">
 
-    {{-- Kontainer ini sekarang mengontrol layout vertikal --}}
-    <div class="relative z-10 h-full flex flex-col">
-
-        {{-- HEADER --}}
-        <header class="flex justify-between items-center p-6 md:p-8 flex-shrink-0" {{-- flex-shrink-0 penting --}} x-data
-            x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'power2.out' })">
-            {{-- Logo dengan teks hitam agar terbaca di background terang --}}
-            <div class="flex items-center gap-3">
+        {{-- HEADER dengan Teks Hitam --}}
+        <header class="flex justify-between items-center" x-data x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'power2.out' })">
+            {{-- Logo --}}
+            <div class="flex items-center gap-3 bg-black/10 backdrop-blur-sm p-2 rounded-full">
                 <img src="{{ asset('assets/img/logo/logo-sijaka.png') }}" alt="Logo SIJAKA" class="w-12 h-12">
-                <span class="text-2xl font-bold text-gray-800 hidden md:block drop-shadow">SIJAKA</span>
+                <span class="text-2xl font-bold text-white px-4 hidden md:block">SIJAKA</span>
             </div>
 
-            {{-- Tombol Navigasi --}}
+            {{-- Tombol Navigasi dengan Teks Hitam --}}
             <nav class="flex items-center gap-4">
                 @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-                    <a href="{{ route('dashboard') }}" wire:navigate>
-                        <x-button label="Dashboard" icon="o-view-columns"
-                            class="btn-ghost text-gray-700 hover:bg-gray-200" />
-                    </a>
+                <a href="{{ route('dashboard') }}" wire:navigate>
+                    {{-- Ubah warna teks menjadi hitam/gelap --}}
+                    <x-button label="Dashboard" icon="o-view-columns"
+                        class="btn-ghost text-gray-700 hover:bg-gray-200" />
+                </a>
                 @endif
+                {{-- Tombol Logout --}}
                 <livewire:auth.logout />
             </nav>
         </header>
 
-        {{-- KONTEN TENGAH (AREA YANG BISA DI-SCROLL) --}}
-        <main class="flex-grow overflow-y-auto flex items-center justify-center p-4">
-
-            <div x-data x-init="gsap.from($el, { y: 50, opacity: 0, duration: 1, ease: 'power2.out', delay: 0.5 })"
-                class="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl max-w-3xl w-full my-auto">
-                <div class="p-8 md:p-12 text-gray-800">
+        <main class="flex-grow flex flex-col overflow-y-auto justify-center items-center text-center text-white p-4">
+            {{-- 1. Kontainer Luar - Untuk Positioning & Animasi --}}
+            <div x-data x-init="gsap.from($el, { y: 50, opacity: 0, duration: 1, ease: 'power2.out', delay: 0.5 })" class="relative" {{-- Posisi relative sebagai jangkar --}}>
+                {{-- 2. Kontainer Background Blur - Layer Bawah --}}
+                <div
+                    class="absolute inset-0 bg-black/20 backdrop-blur-md rounded-3xl transform transition-all duration-500">
+                </div>
+                {{-- 3. Kontainer Konten - Layer Atas --}}
+                <div class="relative z-10 p-8 md:p-12">
                     {{-- Wrapper untuk animasi stagger --}}
                     <div x-data x-init="gsap.from($el.children, { y: 30, opacity: 0, stagger: 0.15, duration: 0.8, ease: 'power2.out', delay: 0.5 })">
-
                         <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-md">Capaian Pembelajaran</h1>
                         <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg md:text-xl drop-shadow">
                             Siswa membedakan dan menghargai identitas diri, keluarga, dan teman-temannya sesuai budaya,
                             suku bangsa, bahasa, agama, dan kepercayaannya di lingkungan rumah, sekolah, dan masyarakat.
                         </p>
                         <h1 class="text-2xl md:text-3xl font-extrabold drop-shadow-md">Tujuan Pembelajaran</h1>
-                        <ol class="space-y-4 mt-3 text-left text-lg">
+                        <ol class="space-y-4 text-left text-lg">
                             <li class="flex items-center gap-4">
                                 <x-icon name="o-eye" class="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
                                 <div>
@@ -95,7 +98,7 @@
                                 </div>
                             </li>
                         </ol>
-                        <div class="flex mt-10 justify-center">
+                        <div class="mt-10">
                             <a href="{{ route('peta-petualangan') }}" wire:navigate
                                 class="btn btn-primary btn-lg rounded-full px-10 transform hover:scale-105 transition-transform shadow-lg">
                                 Mari Berpetualang!
@@ -105,6 +108,5 @@
                 </div>
             </div>
         </main>
-
     </div>
 </div>

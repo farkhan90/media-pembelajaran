@@ -36,7 +36,7 @@
     </div>
 
     {{-- KONTEN UTAMA --}}
-    <div class="relative z-10 h-full flex flex-col p-6 md:p-12">
+    <div class="relative z-10 overflow-scroll h-full flex flex-col p-6 md:p-12">
 
         {{-- HEADER --}}
         <header class="flex justify-between items-center" x-data x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'power2.out' })">

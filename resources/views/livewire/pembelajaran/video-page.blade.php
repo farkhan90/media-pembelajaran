@@ -15,7 +15,7 @@
     </div>
 
     {{-- Konten Utama dengan Animasi Masuk --}}
-    <div class="text-center w-full" x-data x-init="gsap.from($el, { y: 30, opacity: 0, duration: 0.8, ease: 'power2.out' })">
+    <div class="text-center w-full overflow-scroll" x-data x-init="gsap.from($el, { y: 30, opacity: 0, duration: 0.8, ease: 'power2.out' })">
         <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ $judul }}</h1>
         <p class="text-gray-400 mb-8">Tonton video ini sampai selesai untuk membuka pulau berikutnya!</p>
 
