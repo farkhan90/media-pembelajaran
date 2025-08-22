@@ -43,58 +43,43 @@
                     {{-- Wrapper untuk animasi stagger --}}
                     <div x-data x-init="gsap.from($el.children, { y: 30, opacity: 0, stagger: 0.15, duration: 0.8, ease: 'power2.out', delay: 0.5 })">
 
-                        <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-md">Capaian Pembelajaran</h1>
+                        <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-md">Halo, Sobat Belajar!</h1>
                         <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg md:text-xl drop-shadow">
-                            Siswa membedakan dan menghargai identitas diri, keluarga, dan teman-temannya sesuai budaya,
-                            suku bangsa, bahasa, agama, dan kepercayaannya di lingkungan rumah, sekolah, dan masyarakat.
+                            Kali ini kamu akan mempelajari berbagai hal yang menyenangkan, antara lain:
                         </p>
-                        <h1 class="text-2xl md:text-3xl font-extrabold drop-shadow-md">Tujuan Pembelajaran</h1>
+
                         <ol class="space-y-4 mt-3 text-left text-lg">
                             <li class="flex items-center gap-4">
                                 <x-icon name="o-eye" class="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
                                 <div>
-                                    <strong>Mengidentifikasi</strong> berbagai bentuk keberagaman di sekitarmu, seperti
-                                    suku, budaya, bahasa, dan agama.
+                                    <strong>Mengenal</strong> perbedaan budaya, suku, bahasa, agama, dan kepercayaan di
+                                    sekitar kita.
                                 </div>
                             </li>
                             <li class="flex items-center gap-4">
                                 <x-icon name="o-heart" class="w-8 h-8 text-accent flex-shrink-0 mt-1" />
                                 <div>
-                                    <strong>Menghargai</strong> berbagai bentuk keberagaman yang ada di lingkungan
-                                    sekolah.
+                                    <strong>Memahami</strong> apa saja masalah yang bisa muncul karena perbedaan itu.
                                 </div>
                             </li>
                             <li class="flex items-center gap-4">
                                 <x-icon name="o-magnifying-glass-circle"
                                     class="w-8 h-8 text-warning flex-shrink-0 mt-1" />
                                 <div>
-                                    <strong>Menganalisis</strong> tantangan atau masalah yang bisa muncul karena adanya
-                                    perbedaan.
+                                    <strong>Belajar</strong> menghargai perbedaan di sekolah.
                                 </div>
                             </li>
                             <li class="flex items-center gap-4">
                                 <x-icon name="o-light-bulb" class="w-8 h-8 text-info flex-shrink-0 mt-1" />
                                 <div>
-                                    <strong>Menemukan solusi</strong> untuk mengatasi masalah keberagaman bersama
-                                    teman-teman.
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <x-icon name="o-heart" class="w-8 h-8 text-red-600 flex-shrink-0 mt-1" />
-                                <div>
-                                    <strong>Menghargai</strong> berbagai bentuk keberagaman sesuai budaya, suku bangsa,
-                                    bahasa, agama dan kepercayaannya di lingkungan sekolah.
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <x-icons.handshake class="w-8 h-8 text-accent flex-shrink-0 mt-1" />
-
-                                <div>
-                                    <strong>Menghargai</strong> berbagai bentuk keberagaman sesuai budaya, suku bangsa,
-                                    bahasa, agama dan kepercayaannya di lingkungan masyarakat.
+                                    <strong>Belajar</strong> menghargai perbedaan di lingkungan masyarakat.
                                 </div>
                             </li>
                         </ol>
+                        <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg md:text-xl drop-shadow">
+                            Dengan mempelajari ini, kamu akan semakin mengerti bahwa perbedaan itu indah dan menjadi
+                            kekuatan bagi Bangsa Indonesia.
+                        </p>
                         <div class="flex mt-10 justify-center">
                             <a href="{{ route('peta-petualangan') }}" wire:navigate
                                 class="btn btn-primary btn-lg rounded-full px-10 transform hover:scale-105 transition-transform shadow-lg">

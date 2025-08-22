@@ -85,6 +85,13 @@ class Index extends Component
         $this->resetPage();
     }
 
+    #[On('kuis-updated')]
+    public function refreshKuisList()
+    {
+        // Cukup render ulang untuk mendapatkan data terbaru
+        // Dengan adanya #[Computed], Livewire akan otomatis me-refresh `kuises()`
+    }
+
     public function create(): void
     {
         $this->resetForm();

@@ -2,6 +2,8 @@
     <x-header title="Manajemen Kuis Menjodohkan" separator>
         <x-slot:actions>
             @if ($kelasId)
+                <x-button label="Duplikasi Kuis" icon="o-document-duplicate"
+                    wire:click="$dispatch('open-duplikasi-kuis-modal')" class="btn-outline" />
                 <x-button label="Buat Kuis Baru" icon="o-plus" wire:click="create" class="btn-primary" />
             @endif
         </x-slot:actions>
@@ -70,4 +72,9 @@
             </x-slot:actions>
         </x-form>
     </x-modal>
+
+    @if ($kelasId)
+        <livewire:kuis-menjodohkan.duplikasi-kuis :kelas-tujuan-id="$kelasId"
+            wire:key="'duplikasi-kuis-modal-for-'.{{ $kelasId }}" />
+    @endif
 </div>

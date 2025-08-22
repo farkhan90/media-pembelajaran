@@ -15,11 +15,14 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use App\Exports\UsersTemplateExport;
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 #[Layout('components.layouts.app')]
 class Index extends Component
 {
-    use WithFileUploads, WithPagination;
+    use WithFileUploads, WithPagination, WithFileUploads;
 
     // Properti untuk Modal dan Form
     public bool $userModal = false;
@@ -41,6 +44,34 @@ class Index extends Component
     public string $search = '';
     public array $sortBy = ['column' => 'nama', 'direction' => 'asc'];
     public array $headers;
+
+    public bool $imporModal = false;
+    public $fileImpor;
+
+    // Metode untuk download template
+    public function downloadTemplate()
+    {
+        return Excel::download(new UsersTemplateExport, 'template_user.xlsx');
+    }
+
+    // Metode untuk memproses impor
+    public function impor()
+    {
+        $this->validate([
+            'fileImpor' => 'required|mimes:xlsx,xls'
+        ]);
+
+        try {
+            Excel::import(new UsersImport, $this->fileImpor);
+
+            $this->imporModal = false;
+            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Data user berhasil diimpor.', 'icon' => 'success']);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            // Kirim pesan error yang lebih detail (opsional)
+            $this->dispatch('swal', ['title' => 'Impor Gagal', 'text' => 'Ada kesalahan pada data di baris ' . $failures[0]->row() . ': ' . $failures[0]->errors()[0], 'icon' => 'error']);
+        }
+    }
 
     public function mount(): void
     {

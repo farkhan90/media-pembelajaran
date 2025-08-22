@@ -39,3 +39,40 @@
 .mary-table-pagination button {
     @apply cursor-pointer;
 }
+
+/* ======================================================= */
+/*          KUSTOMISASI GLOBAL UNTUK SEMUA MODAL           */
+/* ======================================================= */
+
+/* Targetkan kontainer utama dari modal DaisyUI */
+.modal {
+    /* Gunakan padding untuk memberi jarak di semua sisi */
+    /* p-4 di Tailwind setara dengan padding: 1rem */
+    padding: 1rem;
+}
+
+/* 
+  Targetkan kotak konten modal (.modal-box) secara spesifik.
+  Ini memastikan konten tidak melebihi tinggi layar dikurangi padding.
+*/
+.modal-box {
+    /* 
+      calc(100vh - 2rem) -> 100% tinggi viewport dikurangi 2rem (1rem atas + 1rem bawah).
+      Ini akan memberi margin atas dan bawah sebesar 1rem.
+    */
+    max-height: calc(100vh - 2rem);
+}
+
+/* 
+   (Opsional) Untuk layar yang lebih besar (desktop), kita bisa beri margin yang lebih besar.
+   'md' breakpoint di Tailwind biasanya 768px.
+*/
+@media (min-width: 768px) {
+    .modal {
+        padding: 2rem; /* Jarak lebih besar di desktop */
+    }
+
+    .modal-box {
+        max-height: calc(100vh - 4rem); /* Margin atas & bawah lebih besar */
+    }
+}

@@ -2,7 +2,7 @@
     // Definisikan jumlah slide Anda di satu tempat
     $jumlahSlide = 5;
 @endphp
-<div x-data="{ activeSlide: 1, totalSlides: {{ $jumlahSlide }} }" x-init="setInterval(() => { activeSlide = (activeSlide % totalSlides) + 1 }, 5000)" class="relative w-full h-screen overflow-hidden bg-gray-800">
+<div x-data="{ activeSlide: 1, totalSlides: {{ $jumlahSlide }}, mobileMenuOpen: false }" x-init="setInterval(() => { activeSlide = (activeSlide % totalSlides) + 1 }, 5000)" class="relative w-full h-screen overflow-hidden bg-gray-800">
     {{-- CAROUSEL LATAR BELAKANG --}}
     <div class="absolute inset-0 w-full h-full">
         {{-- Gunakan variabel PHP di sini juga untuk konsistensi --}}
@@ -23,21 +23,31 @@
     <div class="relative z-10 h-full flex flex-col p-6 md:p-12">
 
         {{-- HEADER --}}
-        <header x-data x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'power2.out' })" class="flex justify-between items-center">
-            {{-- Logo dengan shadow --}}
-            <div class="flex items-center gap-3 bg-black/10 backdrop-blur-sm p-2 rounded-full">
+        <header x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'power2.out' })" class="flex justify-between items-center">
+            <div class="flex items-center gap-3 drop-shadow-lg">
                 <img src="{{ asset('assets/img/logo/logo-sijaka.png') }}" alt="Logo SIJAKA" class="w-12 h-12">
-                <span class="text-2xl font-bold text-white px-4 hidden md:block">SIJAKA</span>
+                <span class="text-2xl font-bold text-white hidden md:block">SIJAKA</span>
             </div>
 
-            {{-- Tombol Navigasi dengan background halus --}}
-            <nav class="flex items-center gap-2 md:gap-4 bg-black/10 backdrop-blur-sm p-2 rounded-full">
-                <x-button label="Info SIJAKA" wire:click="$toggle('infoModal')"
-                    class="btn-ghost text-white hover:bg-white/20 rounded-full" />
-                <x-button label="Petunjuk" wire:click="$toggle('petunjukModal')"
-                    class="btn-ghost text-white hover:bg-white/20 rounded-full" />
-                <x-button label="Pengembang" wire:click="$toggle('pengembangModal')"
-                    class="btn-ghost text-white hover:bg-white/20 rounded-full" />
+            {{-- Tombol Navigasi --}}
+            <nav>
+                {{-- NAVIGASI DESKTOP --}}
+                <div class="hidden md:flex items-center gap-2 bg-black/10 backdrop-blur-sm p-2 rounded-full">
+                    <x-button label="Info SIJAKA" wire:click="$toggle('infoModal')"
+                        class="btn-ghost text-white hover:bg-white/20 rounded-full" />
+                    <x-button label="Petunjuk" wire:click="$toggle('petunjukModal')"
+                        class="btn-ghost text-white hover:bg-white/20 rounded-full" />
+                    <x-button label="Pengembang" wire:click="$toggle('pengembangModal')"
+                        class="btn-ghost text-white hover:bg-white/20 rounded-full" />
+                </div>
+
+                {{-- NAVIGASI MOBILE (dikontrol oleh div utama di bawah) --}}
+                <div class="md:hidden">
+                    <div @@click="$dispatch('toggle-menu')" class="cursor-pointer">
+                        <x-button icon="o-bars-3"
+                            class="btn-ghost text-white hover:bg-white/20 btn-circle pointer-events-none" />
+                    </div>
+                </div>
             </nav>
         </header>
 
@@ -79,13 +89,50 @@
                             <a href="{{ route('login') }}"
                                 class="btn btn-primary btn-lg rounded-full px-10 transform hover:scale-105 transition-transform shadow-lg border-2 border-white/50">
                                 <x-icon name="o-arrow-right-on-rectangle" class="w-6 h-6 mr-2" />
-                                Masuk & Mulai Belajar
+                                <span class="font-semibold text-sm md:text-lg">Masuk & Mulai Belajar</span>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <div x-data="{ open: false }" @@toggle-menu.window="open = !open"
+        @@click.outside="open = false" x-show="open"
+        x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" x-cloak
+        class="absolute top-20 right-6 w-64 bg-white/80 backdrop-blur-lg rounded-xl shadow-2xl text-gray-800 z-50 overflow-hidden"
+        style="display: none;" x-init="$watch('open', value => {
+            if (value) {
+                gsap.from($refs.menuItems.children, {
+                    opacity: 0,
+                    x: -20,
+                    stagger: 0.05,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            }
+        })">
+        <div class="p-2" x-ref="menuItems">
+            <a href="#" wire:click.prevent="$toggle('infoModal'); open = false"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                <x-icon name="o-information-circle" class="w-6 h-6" />
+                <span class="font-semibold">Info SIJAKA</span>
+            </a>
+            <a href="#" wire:click.prevent="$toggle('petunjukModal'); open = false"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                <x-icon name="o-question-mark-circle" class="w-6 h-6" />
+                <span class="font-semibold">Petunjuk</span>
+            </a>
+            <hr class="my-1 border-gray-500">
+            <a href="#" wire:click.prevent="$toggle('pengembangModal'); open = false"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                <x-icon name="o-user-circle" class="w-6 h-6" />
+                <span class="font-semibold">Pengembang</span>
+            </a>
+        </div>
     </div>
 
     {{-- ======================================================= --}}
@@ -96,6 +143,7 @@
     <x-modal wire:model="infoModal" title="Tentang SIJAKA">
         <div class="prose max-w-none">
             <p><strong>SIJAKA (Sistem Interaktif Jelajah Keberagaman Indonesia)</strong> adalah sebuah platform media
+                penunjang
                 pembelajaran
                 berbasis web yang dirancang khusus untuk siswa sekolah dasar. Tujuan utama SIJAKA adalah membuat proses
                 belajar menjadi lebih interaktif, menyenangkan, dan efektif.</p>
@@ -186,13 +234,14 @@
     {{-- Modal Pengembang --}}
     <x-modal wire:model="pengembangModal" title="Profil Pengembang">
         <div class="flex flex-col items-center text-center">
-            {{-- <x-avatar :image="asset('assets/img/foto-profil.jpg')" class="!w-32 !h-32 mb-4 ring-4 ring-primary ring-offset-2" /> --}}
-            <h3 class="text-2xl font-bold">Nama Lengkap</h3>
-            <p class="text-gray-500">Mahasiswa Program Studi [Nama Prodi]</p>
+            <x-avatar :image="asset('assets/img/foto-profil.jpg')" class="!w-32 !h-32 mb-4 ring-4 ring-primary ring-offset-2" />
+            <h3 class="text-2xl font-bold">Lia Pratiwi</h3>
+            <p class="text-gray-500">Mahasiswa Program Studi Magister Pendidikan Dasar</p>
             <p class="text-gray-500">Universitas Negeri Yogyakarta</p>
             <hr class="my-4 w-1/2">
             <p class="max-w-md">Web aplikasi SIJAKA ini dikembangkan sebagai bagian dari penelitian untuk menyelesaikan
-                tesis. Diharapkan aplikasi ini dapat menjadi media pembelajaran yang bermanfaat bagi siswa.</p>
+                tesis. Diharapkan aplikasi ini dapat menjadi media penunjang pembelajaran yang bermanfaat bagi siswa.
+            </p>
         </div>
         <x-slot:actions>
             <x-button label="Keren!" @click="$wire.pengembangModal = false" class="btn-primary" />

@@ -229,19 +229,25 @@
                                     'hidden' => $pulau['status'] === 'terkunci',
                                 ]) style="{{ $pulau['posisipin'] }}">
                                     {{-- Tampilkan centang jika sudah selesai atau terbuka --}}
-                                    @if ($pulau['status'] === 'selesai' || $pulau['status'] === 'terbuka')
+                                    @if ($pulau['status'] == 'selesai' || $pulau['status'] == 'terbuka')
                                         <x-icon name="o-check-badge"
                                             class="w-10 h-10 text-success absolute -top-3 -right-10 bg-white rounded-full p-1 shadow-lg" />
                                     @endif
 
                                     <x-icon name="s-map-pin"
                                         class="sign-pin w-10 h-10 text-{{ $pulau['warna'] }} drop-shadow-lg" />
-                                    <div
-                                        class="sign-board bg-{{ $pulau['warna'] }} text-white font-bold text-sm text-center px-3 py-1 rounded-md shadow-lg z-10">
+                                    <div @class([
+                                        'sign-board text-white font-bold text-sm text-center px-3 py-1 rounded-md shadow-lg z-10',
+                                        'bg-primary' => $pulau['warna'] === 'primary',
+                                        'bg-secondary' => $pulau['warna'] === 'secondary',
+                                        'bg-accent' => $pulau['warna'] === 'accent',
+                                        'bg-warning' => $pulau['warna'] === 'warning',
+                                        'bg-info' => $pulau['warna'] === 'info',
+                                    ])>
                                         {{ $pulau['nama'] }}
                                     </div>
 
-                                    @if ($pulau['status'] === 'aktif')
+                                    @if ($pulau['status'] == 'aktif')
                                         <span
                                             class="absolute top-0 left-0 w-full h-full bg-{{ $pulau['warna'] }} rounded-full animate-ping opacity-50"></span>
                                     @endif

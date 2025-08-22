@@ -1,6 +1,9 @@
 <div>
     <x-header title="Manajemen User" separator>
         <x-slot:actions>
+            <x-button label="Download Template" icon="o-document-arrow-down" wire:click="downloadTemplate"
+                class="btn-outline" />
+            <x-button label="Impor User" icon="o-document-arrow-up" @click="$wire.imporModal = true" class="btn-primary" />
             <x-button label="Tambah User" icon="o-plus" wire:click="create" class="btn-primary" />
         </x-slot:actions>
     </x-header>
@@ -97,5 +100,28 @@
                     <x-button label="Simpan" type="submit" class="btn-primary" spinner="save" />
                 </x-slot:actions>
         </x-form>
+    </x-modal>
+
+    {{-- MODAL BARU UNTUK IMPOR --}}
+    <x-modal wire:model="imporModal" title="Impor Data User">
+        <div class="space-y-4">
+            <p>Unggah file Excel yang sudah diisi sesuai dengan template. Jika email sudah ada, data akan diperbarui
+                (kecuali foto). Jika belum ada, user baru akan dibuat.</p>
+
+            <x-file label="File Excel (.xlsx)" wire:model="fileImpor" accept=".xlsx,.xls">
+                <x-slot:placeholder>
+                    Klik atau seret file ke sini
+                </x-slot:placeholder>
+            </x-file>
+
+            @error('fileImpor')
+                <div class="text-red-500 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.imporModal = false" />
+            <x-button label="Proses Impor" class="btn-primary" wire:click="impor" spinner="impor" />
+        </x-slot:actions>
     </x-modal>
 </div>
