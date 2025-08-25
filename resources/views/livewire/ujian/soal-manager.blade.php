@@ -4,7 +4,7 @@
         {{-- SLOT BARU UNTUK TOMBOL KEMBALI --}}
         <x-slot:actions>
             <a href="{{ route('ujian.index', ['kelasId' => $ujian->kelas_id]) }}" wire:navigate>
-                <x-button label="Kembali ke Daftar Ujian" icon="o-arrow-left" class="btn-ghost" />
+                <x-button label="Kembali ke Daftar Kuis 1" icon="o-arrow-left" class="btn-ghost" />
             </a>
             <x-button label="Tambah Soal" icon="o-plus"
                 wire:click="$dispatch('open-soal-form', { ujianId: '{{ $ujian->id }}' })" class="btn-primary" />

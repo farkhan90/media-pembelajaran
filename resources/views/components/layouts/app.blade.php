@@ -11,7 +11,7 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-    <title>{{ $title ?? 'SIJAKA - Sistem Interaktif Jelajah Keberagaman Indonesia' }}</title>
+    <title>{{ 'Dashboard - SIJAKA' }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -21,7 +21,11 @@
     {{-- NAVBAR mobile only --}}
     <x-nav sticky class="lg:hidden">
         <x-slot:brand>
-            <x-app-brand />
+            {{-- Menggunakan logo SIJAKA Anda --}}
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('assets/img/logo/logo-sijaka.png') }}" class="w-10 h-10" alt="Logo SIJAKA" />
+                <div class="text-primary font-bold text-lg">SIJAKA</div>
+            </div>
         </x-slot:brand>
         <x-slot:actions>
             <label for="main-drawer" class="lg:hidden me-3">
@@ -36,7 +40,10 @@
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-inherit">
 
             {{-- BRAND --}}
-            <x-app-brand class="px-5 pt-4" />
+            <div class="flex items-center gap-3 pt-4 pl-4">
+                <img src="{{ asset('assets/img/logo/logo-sijaka.png') }}" class="w-10 h-10" alt="Logo SIJAKA" />
+                <div class="text-black font-bold text-lg">SIJAKA</div>
+            </div>
 
             {{-- MENU --}}
             <x-menu activate-by-route>
@@ -74,15 +81,16 @@
                 @endif
                 @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
                     <x-menu-item title="Siswa per Kelas" icon="o-identification" link="{{ route('siswa.manage') }}" />
-                    <x-menu-item title="Manajemen Ujian" icon="o-academic-cap" link="{{ route('ujian.index') }}" />
-                    <x-menu-item title="Manajemen Kuis" icon="o-arrows-right-left" link="{{ route('kuis.index') }}" />
+                    <x-menu-item title="Manajemen Kuis 1" icon="o-academic-cap" link="{{ route('ujian.index') }}" />
+                    <x-menu-item title="Manajemen Kuis 2" icon="o-arrows-right-left"
+                        link="{{ route('kuis.index') }}" />
                 @endif
                 @if (auth()->user()->role === 'Siswa')
-                    <x-menu-item title="Daftar Ujian" icon="o-academic-cap" link="{{ route('ujian.list') }}" />
-                    <x-menu-item title="Daftar Kuis" icon="o-puzzle-piece" link="{{ route('kuis.list') }}" />
+                    <x-menu-item title="Daftar Kuis 1" icon="o-academic-cap" link="{{ route('ujian.list') }}" />
+                    <x-menu-item title="Daftar Kuis 2" icon="o-puzzle-piece" link="{{ route('kuis.list') }}" />
                 @endif
-                <x-menu-item title="Hasil Ujian" icon="o-chart-bar-square" link="{{ route('ujian.hasil') }}" />
-                <x-menu-item title="Hasil Kuis" icon="o-presentation-chart-line" link="{{ route('kuis.hasil') }}" />
+                <x-menu-item title="Hasil Kuis 1" icon="o-chart-bar-square" link="{{ route('ujian.hasil') }}" />
+                <x-menu-item title="Hasil Kuis 2" icon="o-presentation-chart-line" link="{{ route('kuis.hasil') }}" />
             </x-menu>
         </x-slot:sidebar>
 

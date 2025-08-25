@@ -150,7 +150,7 @@
                         <a href="{{ route('ujian.index') }}" wire:navigate
                             class="p-4 bg-base-200 rounded-lg flex items-center gap-4 hover:bg-base-300">
                             <x-icon name="o-academic-cap" class="w-8 h-8 text-success" />
-                            <span>Kelola Ujian Pilihan Ganda</span>
+                            <span>Kelola Kuis Pilihan Ganda</span>
                         </a>
                         <a href="{{ route('kuis.index') }}" wire:navigate
                             class="p-4 bg-base-200 rounded-lg flex items-center gap-4 hover:bg-base-300">
@@ -195,7 +195,7 @@
                                 {{ $tugas->judul }}
                             </x-slot:value>
                             <x-slot:sub-value>
-                                {{ $isUjian ? 'Ujian Pilihan Ganda' : 'Kuis Menjodohkan' }}
+                                {{ $isUjian ? 'Kuis Pilihan Ganda' : 'Kuis Menjodohkan' }}
                             </x-slot:sub-value>
                             <x-slot:actions>
                                 <x-button label="Kerjakan" :link="$route" wire:navigate
@@ -230,7 +230,7 @@
                             </x-slot:actions>
                         </x-list-item>
                     @empty
-                        <p>Kamu belum pernah mengerjakan ujian atau kuis.</p>
+                        <p>Kamu belum pernah mengerjakan Kuis.</p>
                     @endforelse
                     <div class="mt-4">
                         <x-button label="Lihat Semua Hasil" link="{{ route('ujian.hasil') }}" wire:navigate

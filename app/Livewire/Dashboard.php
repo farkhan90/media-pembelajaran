@@ -88,14 +88,14 @@ class Dashboard extends Component
             'labels' => $labels,
             'datasets' => [
                 [
-                    'label' => 'Rata-rata Skor Ujian',
+                    'label' => 'Rata-rata Skor Kuis 1',
                     'data' => $skorUjianAvg,
                     'backgroundColor' => 'rgba(59, 130, 246, 0.5)',
                     'borderColor' => 'rgba(59, 130, 246, 1)',
                     'borderWidth' => 1
                 ],
                 [
-                    'label' => 'Rata-rata Skor Kuis',
+                    'label' => 'Rata-rata Skor Kuis 2',
                     'data' => $skorKuisAvg,
                     'backgroundColor' => 'rgba(239, 68, 68, 0.5)',
                     'borderColor' => 'rgba(239, 68, 68, 1)',

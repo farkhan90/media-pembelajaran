@@ -4,19 +4,19 @@
         <div wire:key="tahap-mulai" class="w-full h-full bg-indigo-100 flex items-center justify-center p-8">
             <div class="text-center max-w-2xl" x-data x-init="gsap.from($el, { y: 50, opacity: 0, duration: 1, ease: 'back.out(1.7)' })">
                 <x-icon name="o-trophy" class="w-20 h-20 mx-auto text-indigo-500" />
-                <h1 class="text-4xl font-bold text-indigo-800 mt-4">Penilaian Akhir: Petualangan Papua!</h1>
+                <h1 class="text-4xl font-bold text-indigo-800 mt-4">Penilaian Akhir!</h1>
                 <p class="text-indigo-700 mt-4 text-lg">
-                    Ini adalah ujian terakhir! Kamu akan mengerjakan soal <strong>Pilihan Ganda</strong>, lalu
+                    Ini adalah tes terakhir! Kamu akan mengerjakan soal <strong>Pilihan Ganda</strong>, lalu
                     dilanjutkan dengan <strong>Kuis Menjodohkan</strong>.
                 </p>
                 <div class="mt-10">
                     {{-- Tombol akan ditampilkan secara kondisional --}}
                     @if ($ujianPilgan && $kuisMenjodohkan)
-                        <x-button label="Mulai Penilaian!" class="btn-primary btn-lg" wire:click="mulaiPenilaian"
+                        <x-button label="Mulai Kerjakan!" class="btn-primary btn-lg" wire:click="mulaiPenilaian"
                             spinner="mulaiPenilaian" />
                     @else
                         <x-button label="Penilaian belum siap" class="btn-disabled btn-lg" />
-                        <p class="text-sm text-gray-500 mt-2">Pastikan Ujian dan Kuis sudah dibuat dan di-"Publish".</p>
+                        <p class="text-sm text-gray-500 mt-2">Pastikan Kuis sudah dibuat dan di-"Publish".</p>
                     @endif
                 </div>
             </div>
