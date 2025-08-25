@@ -1,5 +1,10 @@
 <div>
-    <x-header title="Hasil & Riwayat Ujian" separator />
+    <x-header title="Hasil & Riwayat Kuis Pilgan" separator>
+        <x-slot:actions>
+            <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
+        </x-slot:actions>
+    </x-header>
 
     {{-- TAMPILAN UNTUK ADMIN DAN GURU --}}
     @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
@@ -8,10 +13,10 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <x-select label="Pilih Sekolah" :options="$this->sekolahOptions()" wire:model.live="sekolahId" option-value="id"
                     option-label="nama" placeholder="-- Semua Sekolah --" />
-                <x-select label="Pilih Kelas" :options="$this->kelasOptions()" wire:model.live="kelasId" placeholder="-- Pilih Kelas --"
-                    option-value="id" option-label="nama" :disabled="!$sekolahId" />
-                <x-select label="Pilih Ujian" :options="$this->ujianOptions()" wire:model.live="ujianId"
-                    placeholder="-- Pilih Ujian --" :disabled="!$kelasId" option-value="id" option-label="judul" />
+                <x-select label="Pilih Kelas" :options="$this->kelasOptions()" wire:model.live="kelasId"
+                    placeholder="-- Pilih Kelas --" option-value="id" option-label="nama" :disabled="!$sekolahId" />
+                <x-select label="Pilih Kuis 1" :options="$this->ujianOptions()" wire:model.live="ujianId"
+                    placeholder="-- Pilih Kuis 1 --" :disabled="!$kelasId" option-value="id" option-label="judul" />
             </div>
         </div>
 
@@ -121,4 +126,40 @@
             </x-slot:actions>
         </x-modal>
     @endif
+
+    <x-modal wire:model="bantuanModal" title="Petunjuk Halaman Hasil Ujian">
+        <div class="prose max-w-none">
+            @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+                <p>Halaman ini menampilkan laporan hasil pengerjaan Ujian Pilihan Ganda oleh siswa. Gunakan filter di
+                    atas untuk menampilkan data yang spesifik.</p>
+                <ul>
+                    <li><strong>Filter Data:</strong> Pilih <strong>Sekolah</strong>, <strong>Kelas</strong>, lalu
+                        <strong>Ujian</strong> untuk melihat grafik dan tabel peringkat siswa yang telah mengerjakan.
+                    </li>
+                    <li><strong>Grafik Skor:</strong> Grafik batang menampilkan sebaran skor semua siswa yang telah
+                        menyelesaikan ujian yang dipilih, diurutkan dari yang tertinggi.</li>
+                    <li><strong>Lihat Rincian:</strong> Klik tombol <x-badge value="Rincian" /> pada setiap baris siswa
+                        untuk membuka modal yang menampilkan detail jawaban siswa (jawaban benar dan jawaban yang
+                        dipilih).</li>
+                    @if (auth()->user()->role === 'Guru')
+                        <li><strong>Akses Guru:</strong> Anda hanya dapat melihat hasil ujian dari siswa di kelas yang
+                            Anda ampu.</li>
+                    @endif
+                </ul>
+            @else
+                {{-- Petunjuk untuk Siswa --}}
+                <p>Di halaman ini, kamu bisa melihat semua riwayat pengerjaan Ujian Pilihan Ganda yang pernah kamu
+                    selesaikan.</p>
+                <ul>
+                    <li><strong>Skor:</strong> Lihat skormu untuk setiap ujian yang telah dikerjakan.</li>
+                    <li><strong>Lihat Rincian:</strong> Ingin tahu jawaban mana yang salah? Klik tombol <x-badge
+                            value="Lihat Rincian" /> untuk melihat kembali soal dan jawabanmu.</li>
+                </ul>
+                <p>Gunakan halaman ini untuk belajar dari kesalahan dan menjadi lebih pintar lagi!</p>
+            @endif
+        </div>
+        <x-slot:actions>
+            <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
+        </x-slot:actions>
+    </x-modal>
 </div>

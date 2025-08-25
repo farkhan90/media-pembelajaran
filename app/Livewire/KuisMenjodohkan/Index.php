@@ -24,6 +24,7 @@ class Index extends Component
     // Properti untuk Modal dan Form
     public bool $kuisModal = false;
     public bool $isEditMode = false;
+    public bool $bantuanModal = false;
     public ?KuisMenjodohkan $kuis = null;
 
     // Properti untuk field form

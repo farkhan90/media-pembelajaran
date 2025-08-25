@@ -1,9 +1,12 @@
 <div>
     <x-header title="Manajemen User" separator>
         <x-slot:actions>
+            <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
             <x-button label="Download Template" icon="o-document-arrow-down" wire:click="downloadTemplate"
                 class="btn-outline" />
-            <x-button label="Impor User" icon="o-document-arrow-up" @click="$wire.imporModal = true" class="btn-primary" />
+            <x-button label="Impor User" icon="o-document-arrow-up" @click="$wire.imporModal = true"
+                class="btn-primary" />
             <x-button label="Tambah User" icon="o-plus" wire:click="create" class="btn-primary" />
         </x-slot:actions>
     </x-header>
@@ -122,6 +125,25 @@
         <x-slot:actions>
             <x-button label="Batal" @click="$wire.imporModal = false" />
             <x-button label="Proses Impor" class="btn-primary" wire:click="impor" spinner="impor" />
+        </x-slot:actions>
+    </x-modal>
+
+    <x-modal wire:model="bantuanModal" title="Petunjuk Halaman Manajemen User">
+        <div class="prose max-w-none">
+            <p>Halaman ini adalah pusat kendali untuk semua akun pengguna di sistem.</p>
+            <ul>
+                <li><strong>Peran (Role):</strong> Anda dapat membuat tiga jenis pengguna: <strong>Admin</strong> (akses
+                    penuh), <strong>Guru</strong>, dan <strong>Siswa</strong>.</li>
+                <li><strong>Tambah User:</strong> Gunakan tombol <x-badge value="+ Tambah User"
+                        class="badge-primary" /> untuk membuat akun baru.</li>
+                <li><strong>Impor Massal:</strong> Gunakan fitur <x-badge value="Download Template" /> dan <x-badge
+                        value="Impor User" /> untuk menambah atau memperbarui banyak pengguna sekaligus menggunakan
+                    file Excel.</li>
+                <li><strong>Keamanan:</strong> Anda tidak dapat menghapus akun Anda sendiri.</li>
+            </ul>
+        </div>
+        <x-slot:actions>
+            <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
         </x-slot:actions>
     </x-modal>
 </div>

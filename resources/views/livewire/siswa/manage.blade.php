@@ -3,6 +3,8 @@
         <x-slot:actions>
             @if ($kelasId)
                 <div class="flex items-center gap-2">
+                    <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                        class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
                     <x-button label="Atur Siswa" icon="o-arrows-right-left" wire:click="openTransferModal"
                         class="btn-outline" />
 
@@ -169,6 +171,34 @@
                 <x-button label="Simpan & Tambah ke Kelas" type="submit" class="btn-primary" spinner="saveSiswa" />
             </x-slot:actions>
         </x-form>
+    </x-modal>
+
+    <x-modal wire:model="bantuanModal" title="Petunjuk Halaman Siswa per Kelas">
+        <div class="prose max-w-none">
+            <p>Halaman ini adalah pusat untuk mengelola keanggotaan siswa di dalam setiap kelas.</p>
+            <ul>
+                <li><strong>Filter Kelas:</strong> Langkah pertama adalah memilih <strong>Sekolah</strong>, lalu
+                    <strong>Kelas</strong> dari dropdown untuk menampilkan daftar siswa di kelas tersebut.</li>
+                <li><strong>Tambah Siswa Baru:</strong> Klik tombol <x-badge value="+ Tambah Siswa Baru"
+                        class="badge-primary" /> untuk mendaftarkan siswa baru dan **langsung memasukkannya** ke dalam
+                    kelas yang sedang Anda lihat.</li>
+                <li><strong>Atur Siswa:</strong> Tombol <x-badge value="Atur Siswa" /> adalah fitur yang sangat kuat.
+                    Gunakan ini untuk:
+                    <ul>
+                        <li>Memindahkan siswa yang belum memiliki kelas (kolom kiri) ke dalam kelas ini.</li>
+                        <li>Mengeluarkan siswa dari kelas ini (kolom kanan).</li>
+                    </ul>
+                    Cukup centang siswa yang diinginkan dan klik "Simpan Perubahan".
+                </li>
+                @if (auth()->user()->role === 'Guru')
+                    <li><strong>Akses Guru:</strong> Sebagai Guru, Anda hanya akan melihat dan dapat mengelola siswa di
+                        kelas-kelas yang Anda ampu.</li>
+                @endif
+            </ul>
+        </div>
+        <x-slot:actions>
+            <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
+        </x-slot:actions>
     </x-modal>
 
 </div>

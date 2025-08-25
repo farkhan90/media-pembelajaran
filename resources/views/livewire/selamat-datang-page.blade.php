@@ -24,10 +24,12 @@
 
             {{-- Tombol Navigasi --}}
             <nav class="flex items-center gap-4">
+                <x-button label="Petunjuk" icon="o-question-mark-circle" wire:click="$toggle('petunjukModal')"
+                    class="btn-ghost bg-gray-50 text-gray-700 hover:bg-gray-200" />
                 @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
                     <a href="{{ route('dashboard') }}" wire:navigate>
                         <x-button label="Dashboard" icon="o-view-columns"
-                            class="btn-ghost text-gray-700 hover:bg-gray-200" />
+                            class="btn-ghost bg-gray-50 text-gray-700 hover:bg-gray-200" />
                     </a>
                 @endif
                 <livewire:auth.logout />
@@ -57,12 +59,6 @@
                                 </div>
                             </li>
                             <li class="flex items-center gap-4">
-                                <x-icon name="o-heart" class="w-8 h-8 text-accent flex-shrink-0 mt-1" />
-                                <div>
-                                    <strong>Memahami</strong> apa saja masalah yang bisa muncul karena perbedaan itu.
-                                </div>
-                            </li>
-                            <li class="flex items-center gap-4">
                                 <x-icon name="o-magnifying-glass-circle"
                                     class="w-8 h-8 text-warning flex-shrink-0 mt-1" />
                                 <div>
@@ -73,6 +69,13 @@
                                 <x-icon name="o-light-bulb" class="w-8 h-8 text-info flex-shrink-0 mt-1" />
                                 <div>
                                     <strong>Belajar</strong> menghargai perbedaan di lingkungan masyarakat.
+                                </div>
+                            </li>
+                            <li class="flex items-center gap-4">
+                                <x-icon name="o-heart" class="w-8 h-8 text-accent flex-shrink-0 mt-1" />
+                                <div>
+                                    <strong>Menganalisis</strong> apa saja masalah yang bisa muncul karena perbedaan
+                                    itu.
                                 </div>
                             </li>
                         </ol>
@@ -90,6 +93,67 @@
                 </div>
             </div>
         </main>
-
     </div>
+
+    {{-- ======================================================= --}}
+    {{--         MODAL PETUNJUK DENGAN LOGIKA PERAN DI SINI      --}}
+    {{-- ======================================================= --}}
+    <x-modal wire:model="petunjukModal" title="Panduan Penggunaan SIJAKA" class="w-11/12 max-w-3xl">
+
+        {{-- KONTEN UNTUK ADMIN DAN GURU --}}
+        @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+            <div class="space-y-6">
+                <x-alert title="Selamat Datang, {{ auth()->user()->role }}!" icon="o-user-circle"
+                    class="alert-info text-white">
+                    Anda memiliki akses untuk mengelola konten dan memantau progres siswa.
+                </x-alert>
+                <div class="flex items-start gap-4">
+                    <x-icon name="o-map" class="w-10 h-10 text-success" />
+                    <div>
+                        <h3 class="font-bold text-lg">Menjelajahi Peta (Akses Penuh)</h3>
+                        <p class="text-gray-600">Anda dapat mengklik pulau mana pun di Peta Petualangan untuk meninjau
+                            kontennya tanpa terikat alur progres siswa. Pada pulau Papua akan menampilkan hasil dari
+                            kuis yang telah dikerjakan oleh siswa</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <x-icon name="o-view-columns" class="w-10 h-10 text-primary" />
+                    <div>
+                        <h3 class="font-bold text-lg">Mengelola Data di Dashboard</h3>
+                        <p class="text-gray-600">Gunakan tombol <strong>"Dashboard"</strong> untuk masuk ke pusat
+                            kendali. Di sana Anda dapat mengelola data master seperti User, Sekolah, Kelas, serta
+                            membuat dan mengedit Ujian dan Kuis.</p>
+                    </div>
+                </div>
+            </div>
+            {{-- KONTEN UNTUK SISWA --}}
+        @else
+            <div class="space-y-6">
+                <x-alert title="Selamat Datang, Petualang!" icon="o-sparkles" class="alert-success text-white">
+                    Ikuti langkah-langkah ini untuk memulai petualangan belajarmu!
+                </x-alert>
+                <div class="flex items-start gap-4">
+                    <x-icon name="o-map" class="w-10 h-10 text-success" />
+                    <div>
+                        <h3 class="font-bold text-lg">Jelajahi Peta Petualangan</h3>
+                        <p class="text-gray-600">Setelah mengklik "Mari Berpetualang!", kamu akan melihat peta. Pulau
+                            yang <strong>berwarna dan berdenyut</strong> adalah tujuanmu selanjutnya.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <x-icon name="o-rocket-launch" class="w-10 h-10 text-accent" />
+                    <div>
+                        <h3 class="font-bold text-lg">Selesaikan Tantangan</h3>
+                        <p class="text-gray-600">Setiap pulau memiliki tantangan seru seperti video atau kuis.
+                            Selesaikan untuk membuka pulau berikutnya!</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <x-slot:actions>
+            <x-button label="Mengerti!" @click="$wire.petunjukModal = false" class="btn-primary" />
+        </x-slot:actions>
+    </x-modal>
+
 </div>

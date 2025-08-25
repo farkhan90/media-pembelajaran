@@ -25,6 +25,7 @@ class Index extends Component
     // Properti untuk Modal dan Form
     public bool $ujianModal = false;
     public bool $isEditMode = false;
+    public bool $bantuanModal = false;
     public ?Ujian $ujian = null;
 
     // Properti untuk field form
@@ -40,7 +41,7 @@ class Index extends Component
     public function mount(): void
     {
         $this->headers = [
-            ['key' => 'judul', 'label' => 'Judul Ujian'],
+            ['key' => 'judul', 'label' => 'Judul Kuis 1'],
             ['key' => 'deskripsi', 'label' => 'Deskripsi'],
             ['key' => 'waktu_menit', 'label' => 'Waktu (Menit)', 'class' => 'w-32 text-center'],
             ['key' => 'status', 'label' => 'Status', 'class' => 'w-32 text-center'],
@@ -146,12 +147,12 @@ class Index extends Component
             }
 
             $this->ujian->update($dataToSave);
-            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Ujian berhasil diperbarui.', 'icon' => 'success']);
+            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Kuis 1 berhasil diperbarui.', 'icon' => 'success']);
         } else {
             $dataToSave['slug'] = Str::slug($dataToSave['judul']) . '-' . strtolower(Str::random(5));
 
             Ujian::create($dataToSave);
-            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Ujian berhasil dibuat.', 'icon' => 'success']);
+            $this->dispatch('swal', ['title' => 'Berhasil!', 'text' => 'Kuis 1 berhasil dibuat.', 'icon' => 'success']);
         }
 
         $this->closeModal();

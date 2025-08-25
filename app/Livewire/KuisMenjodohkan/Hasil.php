@@ -27,6 +27,7 @@ class Hasil extends Component
     // Properti untuk Modal Rincian
     public ?HistoriKuis $selectedHistori = null;
     public bool $detailModal = false;
+    public bool $bantuanModal = false;
     public Collection $detailJawaban;
 
     // Properti Tabel

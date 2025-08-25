@@ -1,5 +1,10 @@
 <div>
-    <x-header title="Hasil & Riwayat Kuis Menjodohkan" separator />
+    <x-header title="Hasil & Riwayat Kuis Menjodohkan" separator>
+        <x-slot:actions>
+            <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
+        </x-slot:actions>
+    </x-header>
 
     {{-- TAMPILAN UNTUK ADMIN DAN GURU --}}
     @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
@@ -8,8 +13,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <x-select label="Pilih Sekolah" :options="$this->sekolahOptions()" wire:model.live="sekolahId"
                     placeholder="-- Semua Sekolah --" option-value="id" option-label="nama" />
-                <x-select label="Pilih Kelas" :options="$this->kelasOptions()" wire:model.live="kelasId" placeholder="-- Pilih Kelas --"
-                    :disabled="!$sekolahId" option-value="id" option-label="nama" />
+                <x-select label="Pilih Kelas" :options="$this->kelasOptions()" wire:model.live="kelasId"
+                    placeholder="-- Pilih Kelas --" :disabled="!$sekolahId" option-value="id" option-label="nama" />
                 <x-select label="Pilih Kuis" :options="$this->kuisOptions()" wire:model.live="kuisId" placeholder="-- Pilih Kuis --"
                     :disabled="!$kelasId" option-value="id" option-label="judul" />
             </div>
@@ -127,4 +132,34 @@
             </x-slot:actions>
         </x-modal>
     @endif
+
+    <x-modal wire:model="bantuanModal" title="Petunjuk Halaman Hasil Kuis">
+        <div class="prose max-w-none">
+            @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+                <p>Halaman ini menampilkan laporan hasil pengerjaan Kuis Menjodohkan oleh siswa.</p>
+                <ul>
+                    <li><strong>Filter Data:</strong> Pilih <strong>Sekolah</strong>, <strong>Kelas</strong>, lalu
+                        <strong>Kuis</strong> untuk melihat data peringkat siswa yang telah mengerjakan.</li>
+                    <li><strong>Lihat Rincian:</strong> Klik tombol <x-badge value="Rincian" /> untuk melihat pasangan
+                        jawaban yang dibuat oleh siswa dan membandingkannya dengan kunci jawaban.</li>
+                    @if (auth()->user()->role === 'Guru')
+                        <li><strong>Akses Guru:</strong> Anda hanya dapat melihat hasil kuis dari siswa di kelas yang
+                            Anda ampu.</li>
+                    @endif
+                </ul>
+            @else
+                {{-- Petunjuk untuk Siswa --}}
+                <p>Di halaman ini, kamu bisa melihat semua riwayat pengerjaan Kuis Menjodohkan yang pernah kamu
+                    selesaikan.</p>
+                <ul>
+                    <li><strong>Skor:</strong> Lihat skormu untuk setiap kuis yang telah dikerjakan.</li>
+                    <li><strong>Lihat Rincian:</strong> Penasaran pasangan mana yang benar atau salah? Klik tombol
+                        <x-badge value="Lihat Rincian" /> untuk melihat kembali hasil pekerjaanmu.</li>
+                </ul>
+            @endif
+        </div>
+        <x-slot:actions>
+            <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
+        </x-slot:actions>
+    </x-modal>
 </div>

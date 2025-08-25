@@ -31,6 +31,8 @@ class Index extends Component
     public ?string $existingLogo = null;
     public bool $logoRemoved = false;
 
+    public bool $bantuanModal = false;
+
     // Properti untuk fungsionalitas tabel
     public string $search = '';
     public array $sortBy = ['column' => 'nama', 'direction' => 'asc'];

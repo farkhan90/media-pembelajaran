@@ -2,6 +2,8 @@
     <x-header title="Manajemen Kuis Menjodohkan" separator>
         <x-slot:actions>
             @if ($kelasId)
+                <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                    class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
                 <x-button label="Duplikasi Kuis" icon="o-document-duplicate"
                     wire:click="$dispatch('open-duplikasi-kuis-modal')" class="btn-outline" />
                 <x-button label="Buat Kuis Baru" icon="o-plus" wire:click="create" class="btn-primary" />
@@ -71,6 +73,33 @@
                 <x-button label="Simpan" type="submit" class="btn-primary" spinner="save" />
             </x-slot:actions>
         </x-form>
+    </x-modal>
+
+    <x-modal wire:model="bantuanModal" title="Petunjuk Halaman Manajemen Kuis">
+        <div class="prose max-w-none">
+            <p>Halaman ini digunakan untuk mengelola paket Kuis Menjodohkan, di mana siswa akan memasangkan item dari
+                kolom kiri ke kanan.</p>
+            <ul>
+                <li><strong>Pilih Kelas:</strong> Sama seperti ujian, Anda harus memilih kelas terlebih dahulu untuk
+                    mengelola kuis.</li>
+                <li><strong>Buat Kuis Baru:</strong> Klik <x-badge value="Buat Kuis Baru" class="badge-primary" /> untuk
+                    membuat kerangka kuis baru. Anda cukup mengisi judul dan status.</li>
+                <li><strong>Status Kuis:</strong>
+                    <ul>
+                        <li><x-badge value="Draft" class="badge-warning" />: Kuis sedang disiapkan dan **tidak bisa**
+                            dilihat atau dikerjakan oleh siswa.</li>
+                        <li><x-badge value="Published" class="badge-success" />: Kuis sudah siap dan **bisa** dikerjakan
+                            oleh siswa.</li>
+                    </ul>
+                </li>
+                <li><strong>Tambah/Edit Pasangan Item:</strong> Untuk mengelola pasangan soal-jawaban (baik teks maupun
+                    gambar), **klik pada judul kuis** di dalam tabel. Anda akan diarahkan ke halaman Manajemen Item.
+                </li>
+            </ul>
+        </div>
+        <x-slot:actions>
+            <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
+        </x-slot:actions>
     </x-modal>
 
     @if ($kelasId)

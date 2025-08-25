@@ -1,7 +1,9 @@
 <div>
     {{-- HEADER HALAMAN --}}
-    <x-header title="Manajemen Sekolah" separator>
+    <x-header separator>
         <x-slot:actions>
+            <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
             <x-button label="Tambah Sekolah" icon="o-plus" wire:click="create" class="btn-primary" />
         </x-slot:actions>
     </x-header>
@@ -112,5 +114,25 @@
                 <x-button label="Simpan" type="submit" class="btn-primary" spinner="save" />
             </x-slot:actions>
         </x-form>
+    </x-modal>
+
+    <x-modal wire:model="bantuanModal" title="Petunjuk Halaman Manajemen Sekolah">
+        <div class="prose max-w-none">
+            <p>Halaman ini digunakan untuk mengelola data master sekolah yang terdaftar di dalam sistem SIJAKA.</p>
+            <ul>
+                <li><strong>Tambah Sekolah:</strong> Klik tombol <x-badge value="+ Tambah Sekolah"
+                        class="badge-primary" /> untuk mendaftarkan sekolah baru.</li>
+                <li><strong>Edit Data:</strong> Klik di mana saja pada baris tabel untuk membuka modal dan mengubah data
+                    sekolah.</li>
+                <li><strong>Hapus Data:</strong> Klik ikon <x-icon name="o-trash"
+                        class="inline-block w-4 h-4 text-error" /> pada baris yang ingin dihapus.</li>
+                <li><strong>Pencarian:</strong> Gunakan kolom pencarian untuk menemukan sekolah berdasarkan nama atau
+                    NPSN.</li>
+            </ul>
+            <p>Data sekolah yang Anda kelola di sini akan digunakan sebagai pilihan saat membuat kelas baru.</p>
+        </div>
+        <x-slot:actions>
+            <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
+        </x-slot:actions>
     </x-modal>
 </div>

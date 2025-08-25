@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash; // <-- Tambahkan ini
-use Illuminate\Support\Facades\Storage; // <-- Tambahkan ini
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -27,6 +26,7 @@ class Manage extends Component
 
     // Properti untuk Modal Transfer Siswa
     public bool $transferModal = false;
+    public bool $bantuanModal = false;
     public array $siswaTanpaKelasIds = [];
     public array $siswaDiKelasIds = [];
 

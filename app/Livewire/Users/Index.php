@@ -46,6 +46,7 @@ class Index extends Component
     public array $headers;
 
     public bool $imporModal = false;
+    public bool $bantuanModal = false;
     public $fileImpor;
 
     // Metode untuk download template

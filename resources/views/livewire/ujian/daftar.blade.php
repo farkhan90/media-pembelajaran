@@ -1,5 +1,5 @@
 <div>
-    <x-header title="Daftar Ujian Tersedia" />
+    <x-header title="Daftar Kuis 1 Tersedia" />
 
     @if ($kelases->isNotEmpty())
         @foreach ($kelases as $kelas)

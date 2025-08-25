@@ -10,7 +10,7 @@ class SelamatDatangPage extends Component
 {
     // Tidak perlu properti atau metode apa pun lagi
     // Komponen ini menjadi 'stateless'
-
+    public bool $petunjukModal = false;
     public function render()
     {
         return view('livewire.selamat-datang-page');

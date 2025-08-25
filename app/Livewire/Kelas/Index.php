@@ -30,6 +30,8 @@ class Index extends Component
     public ?string $guru_pengampu_id = null;
     public string $guruSearch = '';
 
+    public bool $bantuanModal = false;
+
     // Properti untuk fungsionalitas tabel
     public string $search = '';
     public array $sortBy = ['column' => 'nama', 'direction' => 'asc'];
@@ -54,7 +56,7 @@ class Index extends Component
         $this->headers = [
             ['key' => 'nama', 'label' => 'Nama Kelas'],
             ['key' => 'sekolah.nama', 'label' => 'Nama Sekolah'],
-            ['key' => 'guruPengampu.nama', 'label' => 'Guru Pengampu'],
+            ['key' => 'guruPengampu.nama', 'label' => 'Guru Kelas'],
         ];
     }
 
