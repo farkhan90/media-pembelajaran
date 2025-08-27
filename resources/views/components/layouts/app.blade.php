@@ -72,6 +72,8 @@
                 @endif
 
                 <x-menu-item title="Beranda" icon="o-home" link="/dashboard" />
+                <x-menu-item title="Halaman Utama" icon="o-sparkles" link="{{ route('selamat-datang') }}"
+                    wire:navigate />
                 @if (auth()->user()->role === 'Admin')
                     <x-menu-sub title="Master Data" icon="o-circle-stack">
                         <x-menu-item title="Sekolah" icon="o-building-office-2" link="{{ route('sekolah.index') }}" />

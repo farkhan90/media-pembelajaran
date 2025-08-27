@@ -24,9 +24,9 @@
 
             {{-- Tombol Navigasi --}}
             <nav class="flex items-center gap-4">
-                <x-button label="Petunjuk" icon="o-question-mark-circle" wire:click="$toggle('petunjukModal')"
-                    class="btn-ghost bg-gray-50 text-gray-700 hover:bg-gray-200" />
                 @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+                    <x-button label="Petunjuk" icon="o-question-mark-circle" wire:click="$toggle('petunjukModal')"
+                        class="btn-ghost bg-gray-50 text-gray-700 hover:bg-gray-200" />
                     <a href="{{ route('dashboard') }}" wire:navigate>
                         <x-button label="Dashboard" icon="o-view-columns"
                             class="btn-ghost bg-gray-50 text-gray-700 hover:bg-gray-200" />
@@ -98,62 +98,117 @@
     {{-- ======================================================= --}}
     {{--         MODAL PETUNJUK DENGAN LOGIKA PERAN DI SINI      --}}
     {{-- ======================================================= --}}
-    <x-modal wire:model="petunjukModal" title="Panduan Penggunaan SIJAKA" class="w-11/12 max-w-3xl">
-
-        {{-- KONTEN UNTUK ADMIN DAN GURU --}}
-        @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+    @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+        <x-modal wire:model="petunjukModal" title="Panduan Penggunaan SIJAKA">
+            {{-- KONTEN UNTUK ADMIN DAN GURU --}}
             <div class="space-y-6">
-                <x-alert title="Selamat Datang, {{ auth()->user()->role }}!" icon="o-user-circle"
-                    class="alert-info text-white">
-                    Anda memiliki akses untuk mengelola konten dan memantau progres siswa.
-                </x-alert>
-                <div class="flex items-start gap-4">
-                    <x-icon name="o-map" class="w-10 h-10 text-success" />
-                    <div>
-                        <h3 class="font-bold text-lg">Menjelajahi Peta (Akses Penuh)</h3>
-                        <p class="text-gray-600">Anda dapat mengklik pulau mana pun di Peta Petualangan untuk meninjau
-                            kontennya tanpa terikat alur progres siswa. Pada pulau Papua akan menampilkan hasil dari
-                            kuis yang telah dikerjakan oleh siswa</p>
+                <div class="prose w-full mt-4">
+                    <x-alert title="Selamat Datang, {{ auth()->user()->role }}!" icon="o-user-circle"
+                        class="alert-info text-white">
+                        Anda memiliki akses untuk mengelola konten dan memantau progres siswa.
+                    </x-alert>
+                    <div class="flex items-start gap-4">
+                        <x-icon name="o-map" class="w-10 h-10 text-success" />
+                        <div>
+                            <h3 class="font-bold text-lg">Menjelajahi Peta (Akses Penuh)</h3>
+                            <p class="text-gray-600">Anda dapat mengklik pulau mana pun di Peta Petualangan
+                                untuk meninjau
+                                kontennya tanpa terikat alur progres siswa. Pada pulau Papua akan menampilkan
+                                hasil dari
+                                kuis yang telah dikerjakan oleh siswa</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <x-icon name="o-view-columns" class="w-10 h-10 text-primary" />
+                        <div>
+                            <h3 class="font-bold text-lg">Mengelola Data di Dashboard</h3>
+                            <p class="text-gray-600">Gunakan tombol <strong>"Dashboard"</strong> untuk masuk ke
+                                pusat
+                                kendali. Di sana Anda dapat mengelola data master seperti User, Sekolah, Kelas,
+                                serta
+                                membuat dan mengedit Ujian dan Kuis.</p>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-start gap-4">
-                    <x-icon name="o-view-columns" class="w-10 h-10 text-primary" />
+                <div class="space-y-6 mt-4">
+
+                    {{-- BAGIAN CAPAIAN PEMBELAJARAN (CP) --}}
+                    <div class="bg-gradient-to-r from-blue-500 to-primary text-white p-6 rounded-xl shadow-lg" x-data
+                        x-init="gsap.from($el, { scale: 0.9, opacity: 0, duration: 0.5, ease: 'power2.out' })">
+                        <div class="flex items-center gap-4">
+                            <div class="flex-shrink-0">
+                                <x-icon name="s-flag" class="w-12 h-12" />
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl">Capaian Pembelajaran (CP)</h4>
+                                <p class="mt-1 opacity-90">
+                                    Siswa membedakan dan menghargai identitas diri, keluarga, dan teman-temannya
+                                    sesuai budaya, suku bangsa, bahasa, agama, dan kepercayaannya di lingkungan
+                                    rumah, sekolah, dan masyarakat.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- PEMBATAS --}}
+                    <div class="text-center">
+                        <x-icon name="o-arrow-down-circle" class="w-8 h-8 text-gray-400 mx-auto" />
+                    </div>
+
+                    {{-- BAGIAN TUJUAN PEMBELAJARAN (TP) --}}
                     <div>
-                        <h3 class="font-bold text-lg">Mengelola Data di Dashboard</h3>
-                        <p class="text-gray-600">Gunakan tombol <strong>"Dashboard"</strong> untuk masuk ke pusat
-                            kendali. Di sana Anda dapat mengelola data master seperti User, Sekolah, Kelas, serta
-                            membuat dan mengedit Ujian dan Kuis.</p>
+                        <h4 class="font-bold text-xl text-center mb-4 text-gray-700">Tujuan Pembelajaran (TP)
+                        </h4>
+
+                        {{-- Grid untuk Kartu Tujuan --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data x-init="gsap.from($el.children, { y: 30, opacity: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out', delay: 0.3 })">
+                            {{-- TP 1 --}}
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-secondary">
+                                <div class="flex items-center gap-3">
+                                    <x-icon name="o-eye" class="w-10 h-10 text-secondary" />
+                                    <span class="font-semibold text-gray-800">Mengidentifikasi keragaman
+                                        budaya,
+                                        suku bangsa, bahasa, agama, dan kepercayaan di lingkungan
+                                        sekitar.</span>
+                                </div>
+                            </div>
+
+                            {{-- TP 2 --}}
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-accent">
+                                <div class="flex items-center gap-3">
+                                    <x-icon name="o-heart" class="w-10 h-10 text-accent" />
+                                    <span class="font-semibold text-gray-800">Menghargai keragaman budaya, suku
+                                        bangsa, bahasa, agama, dan kepercayaan di lingkungan sekolah.</span>
+                                </div>
+                            </div>
+
+                            {{-- TP 3 --}}
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-success">
+                                <div class="flex items-center gap-3">
+                                    <x-icon name="o-users" class="w-10 h-10 text-success" />
+                                    <span class="font-semibold text-gray-800">Menghargai keragaman budaya, suku
+                                        bangsa, bahasa, agama, dan kepercayaan di lingkungan masyarakat.</span>
+                                </div>
+                            </div>
+
+                            {{-- TP 4 --}}
+                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-warning">
+                                <div class="flex items-center gap-3">
+                                    <x-icon name="o-magnifying-glass-circle" class="w-10 h-10 text-warning" />
+                                    <span class="font-semibold text-gray-800">Menganalisis tantangan yang
+                                        muncul dari keragaman budaya, suku bangsa, bahasa, agama, dan
+                                        kepercayaan.</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            {{-- KONTEN UNTUK SISWA --}}
-        @else
-            <div class="space-y-6">
-                <x-alert title="Selamat Datang, Petualang!" icon="o-sparkles" class="alert-success text-white">
-                    Ikuti langkah-langkah ini untuk memulai petualangan belajarmu!
-                </x-alert>
-                <div class="flex items-start gap-4">
-                    <x-icon name="o-map" class="w-10 h-10 text-success" />
-                    <div>
-                        <h3 class="font-bold text-lg">Jelajahi Peta Petualangan</h3>
-                        <p class="text-gray-600">Setelah mengklik "Mari Berpetualang!", kamu akan melihat peta. Pulau
-                            yang <strong>berwarna dan berdenyut</strong> adalah tujuanmu selanjutnya.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <x-icon name="o-rocket-launch" class="w-10 h-10 text-accent" />
-                    <div>
-                        <h3 class="font-bold text-lg">Selesaikan Tantangan</h3>
-                        <p class="text-gray-600">Setiap pulau memiliki tantangan seru seperti video atau kuis.
-                            Selesaikan untuk membuka pulau berikutnya!</p>
-                    </div>
-                </div>
-            </div>
-        @endif
 
-        <x-slot:actions>
-            <x-button label="Mengerti!" @click="$wire.petunjukModal = false" class="btn-primary" />
-        </x-slot:actions>
-    </x-modal>
+            <x-slot:actions>
+                <x-button label="Mengerti!" @click="$wire.petunjukModal = false" class="btn-primary" />
+            </x-slot:actions>
+        </x-modal>
+    @endif
 
 </div>
