@@ -49,15 +49,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/kelas', KelasIndex::class)->name('kelas.index')->middleware('role:Admin');
     Route::get('/users', UserIndex::class)->name('users.index')->middleware('role:Admin');
     Route::get('/siswa-per-kelas', SiswaManage::class)->name('siswa.manage')->middleware('role:Admin,Guru');
-    Route::get('/manajemen-ujian', UjianIndex::class)->name('ujian.index')->middleware('role:Admin,Guru');
+    Route::get('/manajemen-ujian', UjianIndex::class)->name('ujian.index')->middleware('role:Admin');
     Route::get('/manajemen-ujian/{ujian}/soal', SoalManager::class)
         ->name('ujian.soal.index')
-        ->middleware('role:Admin,Guru');
+        ->middleware('role:Admin');
     Route::get('/hasil-ujian', UjianHasil::class)->name('ujian.hasil');
-    Route::get('/manajemen-kuis', KuisMenjodohkanIndex::class)->name('kuis.index')->middleware('role:Admin,Guru');
+    Route::get('/manajemen-kuis', KuisMenjodohkanIndex::class)->name('kuis.index')->middleware('role:Admin');
     Route::get('/manajemen-kuis/{kuisMenjodohkan}/items', KuisItemManager::class)
         ->name('kuis.items.index')
-        ->middleware('role:Admin,Guru');
+        ->middleware('role:Admin');
     Route::get('/hasil-kuis', KuisHasil::class)->name('kuis.hasil');
 
     // Rute untuk halaman lobi/capaian pembelajaran

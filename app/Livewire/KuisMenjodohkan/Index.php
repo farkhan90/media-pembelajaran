@@ -17,10 +17,6 @@ class Index extends Component
 {
     use WithPagination;
 
-    // Properti untuk Filter
-    #[Url(as: 'kelasId', keep: true)]
-    public ?string $kelasId = null;
-
     // Properti untuk Modal dan Form
     public bool $kuisModal = false;
     public bool $isEditMode = false;
@@ -46,44 +42,15 @@ class Index extends Component
         ];
     }
 
-    // Opsi Kelas berdasarkan Role (logika yang sama)
-    #[Computed(cache: true)]
-    public function kelasOptions()
-    {
-        $user = Auth::user();
-        $query = Kelas::query();
-
-        if ($user->role === 'Guru') {
-            $query->where('guru_pengampu_id', $user->id);
-        }
-
-        return $query->with('sekolah')->orderBy('nama')->get()->map(function ($kelas) {
-            return [
-                'id' => $kelas->id,
-                'name' => "{$kelas->sekolah->nama} - {$kelas->nama}"
-            ];
-        });
-    }
-
     // Daftar kuis berdasarkan filter kelas
     #[Computed]
     public function kuises()
     {
-        if (!$this->kelasId) {
-            return KuisMenjodohkan::where('id', false)->paginate(10); // Trik paginator kosong
-        }
-
         return KuisMenjodohkan::query()
-            ->withCount('itemPertanyaans') // Menghitung jumlah pasangan soal
-            ->where('kelas_id', $this->kelasId)
+            ->withCount('itemPertanyaans')
             ->when($this->search, fn($q) => $q->where('judul', 'like', "%{$this->search}%"))
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-    }
-
-    public function updatedKelasId()
-    {
-        $this->resetPage();
     }
 
     #[On('kuis-updated')]
@@ -123,8 +90,6 @@ class Index extends Component
             'deskripsi' => 'nullable|string',
             'status' => 'required|in:Draft,Published',
         ]);
-
-        $validated['kelas_id'] = $this->kelasId;
 
         if ($this->isEditMode) {
             $this->kuis->update($validated);

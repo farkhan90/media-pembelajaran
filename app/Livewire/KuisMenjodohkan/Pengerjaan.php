@@ -7,6 +7,7 @@ use App\Models\HistoriKuis;
 use App\Models\ItemJawaban;
 use App\Models\KuisMenjodohkan;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -32,11 +33,7 @@ class Pengerjaan extends Component
     public function mount(KuisMenjodohkan $kuisMenjodohkan, ?string $parentRunnerId = null, ?string $historiUjianId = null)
     {
         $this->kuis = $kuisMenjodohkan;
-        $user = auth()->user();
-
-        if (!$user->kelas()->whereHas('kuisMenjodohkan', fn($q) => $q->where('id', $this->kuis->id))->exists()) {
-            abort(403, 'Anda tidak memiliki akses ke kuis ini.');
-        }
+        $user = Auth::user();
 
         $historiInProgress = HistoriKuis::where('kuis_id', $this->kuis->id)
             ->where('user_id', $user->id)

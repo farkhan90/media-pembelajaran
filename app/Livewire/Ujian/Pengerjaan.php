@@ -5,7 +5,6 @@ namespace App\Livewire\Ujian;
 use App\Livewire\Pembelajaran\PenilaianRunner;
 use App\Models\HistoriUjian;
 use App\Models\Ujian;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -31,14 +30,7 @@ class Pengerjaan extends Component
     public function mount(Ujian $ujian, ?string $parentRunnerId = null)
     {
         $this->ujian = $ujian;
-        $user = auth()->user();
-
-        // 1. Otorisasi: Pastikan siswa ada di kelas yang benar
-        // (Kita akan tambahkan middleware nanti untuk ini, tapi validasi di sini juga bagus)
-
-        if (!$user->kelas()->where('kelas_id', $ujian->kelas_id)->exists()) {
-            abort(403, 'Anda tidak terdaftar di kelas untuk ujian ini.');
-        }
+        $user = Auth::user();
 
         // SELALU BUAT HISTORI BARU SETIAP KALI UJIAN DIMULAI
         $this->histori = HistoriUjian::create([

@@ -26,20 +26,13 @@ class PenilaianRunner extends Component
         $this->pulau = $pulau;
         $this->tahap = $tahap;
 
-        $user = Auth::user();
-        $kelasSiswa = $user->kelas->first();
-
         // Selalu muat data ujian/kuis yang relevan di awal
-        if ($kelasSiswa) {
-            $this->ujianPilgan = Ujian::where('kelas_id', $kelasSiswa->id)
-                ->where('status', 'Published')
-                ->latest()
-                ->first();
-            $this->kuisMenjodohkan = KuisMenjodohkan::where('kelas_id', $kelasSiswa->id)
-                ->where('status', 'Published')
-                ->latest()
-                ->first();
-        }
+        $this->ujianPilgan = Ujian::where('status', 'Published')
+            ->latest()
+            ->first();
+        $this->kuisMenjodohkan = KuisMenjodohkan::where('status', 'Published')
+            ->latest()
+            ->first();
 
         // Tangani routing internal (jika pengguna me-refresh di tengah jalan)
         if ($tahap === 'pilgan' && $data) {
@@ -64,14 +57,9 @@ class PenilaianRunner extends Component
     {
         // Pengaman: Jika objek kuis hilang, muat ulang.
         if (!$this->kuisMenjodohkan) {
-            $user = Auth::user();
-            $kelasSiswa = $user->kelas->first();
-            if ($kelasSiswa) {
-                $this->kuisMenjodohkan = KuisMenjodohkan::where('kelas_id', $kelasSiswa->id)
-                    ->where('status', 'Published')
-                    ->latest()
-                    ->first();
-            }
+            $this->kuisMenjodohkan = KuisMenjodohkan::where('status', 'Published')
+                ->latest()
+                ->first();
         }
 
         // Jika setelah dimuat ulang tetap tidak ada, beri tahu pengguna.

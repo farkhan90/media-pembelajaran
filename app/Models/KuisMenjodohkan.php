@@ -23,14 +23,6 @@ class KuisMenjodohkan extends Model
     ];
 
     /**
-     * Kuis ini milik Kelas mana.
-     */
-    public function kelas(): BelongsTo
-    {
-        return $this->belongsTo(Kelas::class);
-    }
-
-    /**
      * Kuis ini memiliki banyak Item Pertanyaan.
      */
     public function itemPertanyaans(): HasMany

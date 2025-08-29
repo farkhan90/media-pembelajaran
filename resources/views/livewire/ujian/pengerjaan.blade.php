@@ -152,7 +152,7 @@
             <x-button label="Kembali & Periksa Lagi" @click="$wire.rekapModal = false" />
 
             {{-- Tombol konfirmasi akhir yang memanggil backend --}}
-            <x-button label="Ya, Selesaikan & Lihat Hasil" class="btn-primary" wire:click="selesaikanUjian"
+            <x-button label="Ya, Selesaikan" class="btn-primary" wire:click="selesaikanUjian"
                 spinner="selesaikanUjian" />
         </x-slot:actions>
     </x-modal>

@@ -1,68 +1,53 @@
 <div>
     <x-header title="Manajemen Kuis 1" separator>
         <x-slot:actions>
-            {{-- Tombol hanya muncul jika kelas sudah dipilih --}}
-            @if ($kelasId)
-                <div class="flex items-center gap-2">
-                    <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
-                        class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
-                    <x-button label="Duplikasi Kuis 1" icon="o-document-duplicate"
-                        wire:click="$dispatch('open-duplikasi-modal')" class="btn-outline" />
-                    <x-button label="Buat Kuis 1 Baru" icon="o-plus" wire:click="create" class="btn-primary" />
-                </div>
-            @endif
+            <div class="flex items-center gap-2">
+                <x-button icon="o-question-mark-circle" wire:click="$toggle('bantuanModal')"
+                    class="btn-sm btn-circle btn-ghost" tooltip-left="Bantuan" />
+                <x-button label="Buat Kuis 1 Baru" icon="o-plus" wire:click="create" class="btn-primary" />
+            </div>
         </x-slot:actions>
     </x-header>
 
-    {{-- AREA FILTER KELAS --}}
-    <div class="mb-4">
-        <x-select label="Pilih Kelas untuk Mengelola Kuis 1" :options="$this->kelasOptions()" wire:model.live="kelasId"
-            placeholder="--- Pilih Kelas ---" icon="o-academic-cap" />
-    </div>
+    <x-card>
+        <x-input placeholder="Cari judul kuis 1..." wire:model.live.debounce.300ms="search" icon="o-magnifying-glass"
+            class="w-full lg:w-1/3" />
 
-    @if ($kelasId)
-        <x-card>
-            <x-input placeholder="Cari judul kuis 1..." wire:model.live.debounce.300ms="search"
-                icon="o-magnifying-glass" class="w-full lg:w-1/3" />
+        @if ($this->ujians->isNotEmpty())
+            <x-table :headers="$headers" :rows="$this->ujians" with-pagination class="mt-4">
+                {{-- Kita akan membuat judul ujian menjadi link ke halaman detail soal --}}
+                @scope('cell_judul', $ujian)
+                    <a href="{{ route('ujian.soal.index', ['ujian' => $ujian->slug]) }}" class="font-bold hover:underline"
+                        wire:navigate>
+                        {{ $ujian->judul }}
+                    </a>
+                @endscope
 
-            @if ($this->ujians->isNotEmpty())
-                <x-table :headers="$headers" :rows="$this->ujians" with-pagination class="mt-4">
-                    {{-- Kita akan membuat judul ujian menjadi link ke halaman detail soal --}}
-                    @scope('cell_judul', $ujian)
-                        <a href="{{ route('ujian.soal.index', ['ujian' => $ujian->slug]) }}"
-                            class="font-bold hover:underline" wire:navigate>
-                            {{ $ujian->judul }}
-                        </a>
-                    @endscope
+                @scope('cell_status', $ujian)
+                    <x-badge :value="$ujian->status" @class([
+                        'badge-warning' => $ujian->status === 'Draft',
+                        'badge-success' => $ujian->status === 'Published',
+                    ]) />
+                @endscope
 
-                    @scope('cell_status', $ujian)
-                        <x-badge :value="$ujian->status" @class([
-                            'badge-warning' => $ujian->status === 'Draft',
-                            'badge-success' => $ujian->status === 'Published',
-                        ]) />
-                    @endscope
-
-                    @scope('actions', $ujian)
-                        <div class="flex items-center gap-2 justify-end" wire:key="action-{{ $ujian->id }}">
-                            <x-button icon="o-pencil" wire:click="edit('{{ $ujian->id }}')" class="btn-sm btn-ghost"
-                                spinner />
-                            <x-button icon="o-trash"
-                                wire:click.stop="$dispatch('swal:confirm', {
-                                    title: 'Yakin ingin menghapus?',
-                                    text: 'Menghapus kuis 1 akan menghapus semua soal dan histori terkait!',
-                                    next: { event: 'delete-confirmed', params: { id: '{{ $ujian->id }}' } }
-                                })"
-                                class="btn-sm btn-ghost text-red-500" spinner />
-                        </div>
-                    @endscope
-                </x-table>
-            @else
-                <x-alert title="Belum ada kuis 1 di kelas ini." icon="o-exclamation-triangle" class="mt-4" />
-            @endif
-        </x-card>
-    @else
-        <x-alert title="Silakan pilih kelas terlebih dahulu." icon="o-information-circle" />
-    @endif
+                @scope('actions', $ujian)
+                    <div class="flex items-center gap-2 justify-end" wire:key="action-{{ $ujian->id }}">
+                        <x-button icon="o-pencil" wire:click="edit('{{ $ujian->id }}')" class="btn-sm btn-ghost"
+                            spinner />
+                        <x-button icon="o-trash"
+                            wire:click.stop="$dispatch('swal:confirm', {
+                                title: 'Yakin ingin menghapus?',
+                                text: 'Menghapus kuis 1 akan menghapus semua soal dan histori terkait!',
+                                next: { event: 'delete-confirmed', params: { id: '{{ $ujian->id }}' } }
+                            })"
+                            class="btn-sm btn-ghost text-red-500" spinner />
+                    </div>
+                @endscope
+            </x-table>
+        @else
+            <x-alert title="Belum ada kuis 1 di kelas ini." icon="o-exclamation-triangle" class="mt-4" />
+        @endif
+    </x-card>
 
     {{-- MODAL UNTUK MEMBUAT/MENGEDIT UJIAN --}}
     <x-modal wire:model="ujianModal" :title="$isEditMode ? 'Edit Ujian' : 'Buat Kuis 1 Baru'" separator>
@@ -93,8 +78,6 @@
                 <li><strong>Buat Ujian Baru:</strong> Klik tombol <x-badge value="Buat Ujian Baru"
                         class="badge-primary" /> untuk membuat paket ujian. Anda akan diminta mengisi judul, waktu, dan
                     status.</li>
-                <li><strong>Duplikasi Ujian:</strong> Gunakan tombol <x-badge value="Duplikasi Ujian" /> untuk menyalin
-                    seluruh paket ujian (beserta soalnya) dari kelas lain. Ini sangat menghemat waktu!</li>
                 <li><strong>Status Ujian:</strong>
                     <ul>
                         <li><x-badge value="Draft" class="badge-warning" />: Ujian sedang disiapkan dan **tidak bisa**
@@ -111,8 +94,4 @@
             <x-button label="Saya Mengerti" @click="$wire.bantuanModal = false" class="btn-primary" />
         </x-slot:actions>
     </x-modal>
-
-    @if ($kelasId)
-        <livewire:ujian.duplikasi-ujian :kelas-tujuan-id="$kelasId" wire:key="'duplikasi-ujian-modal-for-'.{{ $kelasId }}" />
-    @endif
 </div>

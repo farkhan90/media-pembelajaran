@@ -27,14 +27,6 @@ class Ujian extends Model
     }
 
     /**
-     * Ujian ini milik Kelas mana.
-     */
-    public function kelas(): BelongsTo
-    {
-        return $this->belongsTo(Kelas::class);
-    }
-
-    /**
      * Ujian ini memiliki banyak Soal.
      */
     public function soals(): HasMany

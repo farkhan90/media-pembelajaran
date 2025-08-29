@@ -2,14 +2,11 @@
 
 namespace App\Livewire\Ujian;
 
-use App\Models\Kelas;
 use App\Models\Ujian;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -17,10 +14,6 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use WithPagination;
-
-    // Properti untuk Filter
-    #[Url(as: 'kelasId', keep: true)]
-    public ?string $kelasId = null;
 
     // Properti untuk Modal dan Form
     public bool $ujianModal = false;
@@ -49,37 +42,12 @@ class Index extends Component
         ];
     }
 
-    // Opsi Kelas berdasarkan Role (kita gunakan lagi logika ini)
-    #[Computed]
-    public function kelasOptions()
-    {
-        $user = Auth::user();
-        $query = Kelas::query();
-
-        if ($user->role === 'Guru') {
-            // Guru hanya bisa memilih kelas yang diampunya
-            $query->where('guru_pengampu_id', $user->id);
-        }
-
-        return $query->with('sekolah')->orderBy('nama')->get()->map(function ($kelas) {
-            return [
-                'id' => $kelas->id,
-                'name' => "{$kelas->sekolah->nama} - {$kelas->nama}"
-            ];
-        });
-    }
-
     // Daftar ujian berdasarkan filter kelas
     #[Computed]
     public function ujians()
     {
-        if (!$this->kelasId) {
-            return collect();
-        }
-
         return Ujian::query()
-            ->withCount('soals') // Menghitung jumlah soal terkait
-            ->where('kelas_id', $this->kelasId)
+            ->withCount('soals')
             ->when($this->search, fn($q) => $q->where('judul', 'like', "%{$this->search}%"))
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -89,12 +57,6 @@ class Index extends Component
     public function refreshUjianList()
     {
         // Cukup render ulang untuk mendapatkan data terbaru
-    }
-
-    // Dipanggil saat filter kelas diubah
-    public function updatedKelasId()
-    {
-        $this->resetPage();
     }
 
     // Membuka modal tambah data
@@ -134,7 +96,6 @@ class Index extends Component
         ]);
 
         $dataToSave = [
-            'kelas_id' => $this->kelasId,
             'judul' => $validated['judul'],
             'deskripsi' => $validated['deskripsi'],
             'waktu_menit' => $validated['waktu_menit'],
