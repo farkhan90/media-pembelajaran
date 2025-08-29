@@ -3,12 +3,12 @@
 namespace App\Livewire\Pembelajaran;
 
 use App\Models\ProgresPulauSiswa;
+use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -53,15 +53,13 @@ class PenilaianLaporan extends Component
             ->with(['user.kelas.sekolah']);
 
         if ($user->role === 'Guru') {
-            // Ambil daftar ID kelas yang diampu oleh guru
-            $kelasDiampuIds = $user->kelasDiampu->pluck('id');
+            // 1. Dapatkan daftar ID siswa dari kelas yang diampu guru
+            $siswaIds = User::whereHas('kelas', function ($query) use ($user) {
+                $query->where('guru_pengampu_id', $user->id);
+            })->pluck('users.id');
 
-            // Gunakan whereHas untuk memfilter progres berdasarkan kelas dari user-nya
-            $query->whereHas('user', function (Builder $userQuery) use ($kelasDiampuIds) {
-                $userQuery->whereHas('kelas', function (Builder $kelasQuery) use ($kelasDiampuIds) {
-                    $kelasQuery->whereIn('kelas.id', $kelasDiampuIds);
-                });
-            });
+            // 2. Filter progres berdasarkan daftar ID siswa tersebut
+            $query->whereIn('user_id', $siswaIds);
         }
 
         // Ambil SEMUA data, jangan paginate di sini
@@ -105,15 +103,13 @@ class PenilaianLaporan extends Component
             ->with(['user.kelas.sekolah']);
 
         if ($user->role === 'Guru') {
-            // Ambil daftar ID kelas yang diampu oleh guru
-            $kelasDiampuIds = $user->kelasDiampu->pluck('id');
+            // 1. Dapatkan daftar ID siswa dari kelas yang diampu guru
+            $siswaIds = User::whereHas('kelas', function ($query) use ($user) {
+                $query->where('guru_pengampu_id', $user->id);
+            })->pluck('users.id');
 
-            // Gunakan whereHas untuk memfilter progres berdasarkan kelas dari user-nya
-            $query->whereHas('user', function (Builder $userQuery) use ($kelasDiampuIds) {
-                $userQuery->whereHas('kelas', function (Builder $kelasQuery) use ($kelasDiampuIds) {
-                    $kelasQuery->whereIn('kelas.id', $kelasDiampuIds);
-                });
-            });
+            // 2. Filter progres berdasarkan daftar ID siswa tersebut
+            $query->whereIn('user_id', $siswaIds);
         }
 
         return $query->orderBy('skor_akumulasi', 'desc')
