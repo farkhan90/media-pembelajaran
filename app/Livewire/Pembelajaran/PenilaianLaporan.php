@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -52,8 +53,15 @@ class PenilaianLaporan extends Component
             ->with(['user.kelas.sekolah']);
 
         if ($user->role === 'Guru') {
+            // Ambil daftar ID kelas yang diampu oleh guru
             $kelasDiampuIds = $user->kelasDiampu->pluck('id');
-            $query->whereIn('kelas_id', $kelasDiampuIds);
+
+            // Gunakan whereHas untuk memfilter progres berdasarkan kelas dari user-nya
+            $query->whereHas('user', function (Builder $userQuery) use ($kelasDiampuIds) {
+                $userQuery->whereHas('kelas', function (Builder $kelasQuery) use ($kelasDiampuIds) {
+                    $kelasQuery->whereIn('kelas.id', $kelasDiampuIds);
+                });
+            });
         }
 
         // Ambil SEMUA data, jangan paginate di sini
@@ -97,8 +105,15 @@ class PenilaianLaporan extends Component
             ->with(['user.kelas.sekolah']);
 
         if ($user->role === 'Guru') {
+            // Ambil daftar ID kelas yang diampu oleh guru
             $kelasDiampuIds = $user->kelasDiampu->pluck('id');
-            $query->whereIn('kelas_id', $kelasDiampuIds);
+
+            // Gunakan whereHas untuk memfilter progres berdasarkan kelas dari user-nya
+            $query->whereHas('user', function (Builder $userQuery) use ($kelasDiampuIds) {
+                $userQuery->whereHas('kelas', function (Builder $kelasQuery) use ($kelasDiampuIds) {
+                    $kelasQuery->whereIn('kelas.id', $kelasDiampuIds);
+                });
+            });
         }
 
         return $query->orderBy('skor_akumulasi', 'desc')
