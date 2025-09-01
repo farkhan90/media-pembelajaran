@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileController;
 use App\Livewire\Auth\LoginPage;
+use App\Livewire\Auth\RegisterPage;
 use App\Livewire\Dashboard;
 use App\Livewire\Sekolah\Index as SekolahIndex;
 use App\Livewire\Kelas\Index as KelasIndex;
@@ -29,11 +30,12 @@ use App\Livewire\PetaPetualanganPage;
 use Illuminate\Support\Facades\Route;
 
 // Halaman landing page publik
-Route::get('/', WelcomePage::class);
+Route::get('/', WelcomePage::class)->name('welcome');
 
 // Grup rute untuk tamu (belum login)
 Route::middleware('guest')->group(function () {
     Route::get('/login', LoginPage::class)->name('login');
+    Route::get('/register', RegisterPage::class)->name('register');
 });
 
 Route::get('/files/sekolah/{sekolahId}/logo', [FileController::class, 'showSekolahLogo'])->name('files.sekolah.logo');

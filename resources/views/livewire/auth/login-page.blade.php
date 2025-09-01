@@ -1,6 +1,9 @@
 <div x-data="{}" x-init="gsap.from($el, { y: 50, opacity: 0, duration: 0.7, ease: 'power2.out' })">
     {{-- KARTU UTAMA DENGAN DUA KOLOM --}}
     <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row overflow-hidden">
+        <a href="{{ route('welcome') }}" wire:navigate class="absolute top-4 left-4">
+            <x-button label="Home" icon="o-arrow-left" class="btn-ghost btn-sm" tooltip="Kembali ke Halaman Utama" />
+        </a>
 
         {{-- KOLOM KIRI: ILUSTRASI --}}
         <div class="w-full lg:w-1/2 p-8 bg-blue-50 flex-col justify-center items-center hidden lg:flex">
@@ -42,6 +45,14 @@
                         class="btn-primary btn-lg w-full" {{-- Tombol besar dan lebar penuh --}} spinner="login" />
                 </x-slot:actions>
             </x-form>
+            <div class="text-center mt-6">
+                <p class="text-sm text-gray-500">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}" wire:navigate class="font-semibold text-primary hover:underline">
+                        Daftar di sini!
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
 </div>
