@@ -33,10 +33,12 @@ class RefleksiPage extends Component
         $this->pulau = $pulau;
         $this->judul = "Refleksi Petualangan di Sulawesi";
         $this->daftarPertanyaan = [
-            1 => "Coba ingat lagi saat JoJo dan Mika berdebat. Bagaimana ya, perasaan JoJo dan Mika saat itu? Sekarang, pejamkan matamu sebentar dan bayangkan kamu ada di posisi mereka. Apa yang kamu rasakan di dalam hatimu?",
-            2 => "Di akhir cerita, JoJo dan Mika merasa sangat senang karena berhasil membuat pertunjukan bersama. Perasaan senang seperti apa yang kamu rasakan saat bisa bekerja sama dengan temanmu? Coba ceritakan pengalamanmu!",
-            3 => "Video ini menunjukkan bahwa Indonesia punya banyak budaya yang indah. Apa satu hal yang kamu pelajari tentang budaya yang berbeda dari video ini? Mengapa penting bagi kita untuk tahu dan menghargai perbedaan itu?",
-            4 => "Setelah menonton video ini, apa satu janji kecil yang bisa kamu ucapkan di dalam hati untuk membuat lingkungan sekolahmu jadi tempat yang lebih nyaman dan penuh persahabatan bagi semua orang?"
+            1 => "Coba ingat lagi saat JoJo dan Mika berdebat. Bagaimana ya, perasaan JoJo dan Mika saat itu? ",
+            2 => "Video ini menunjukkan bahwa Indonesia punya banyak budaya yang indah. Apa satu hal yang kamu pelajari tentang budaya yang berbeda dari video ini? Mengapa penting bagi kita untuk tahu dan menghargai perbedaan itu?",
+            3 => "Setelah menonton video ini, apa satu janji kecil yang bisa kamu ucapkan di dalam hati untuk membuat lingkungan sekolahmu jadi tempat yang lebih nyaman dan penuh persahabatan bagi semua orang?",
+            4 => "Sekarang coba selesaikan permasalahan ini! <br>
+                    Ibu Guru memberikan tugas kelompok yang seru. Setiap kelompok harus membuat video pendek di mana setiap anggota memperkenalkan diri dan mengucapkan satu kalimat sederhana dari bahasa daerahnya. Kamu melihat salah satu teman kelompokmu tampak cemas. Dia berbisik padamu kalau ia malu menggunakan bahasa daerahnya di depan video. Ia khawatir teman-teman lain tidak mengerti dan menertawakannya karena bahasa daerahnya tidak sepopuler bahasa daerah lain. Ceritakan apa yang akan kamu lakukan untuk membantu temanmu agar ia merasa bangga dan berani menggunakan bahasa daerahnya di dalam video kelompok kalian!
+                    "
         ];
 
         $user = Auth::user();

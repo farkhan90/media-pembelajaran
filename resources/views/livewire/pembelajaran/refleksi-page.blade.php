@@ -25,7 +25,7 @@
                             class="flex-shrink-0 bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">
                             {{ $nomor }}
                         </div>
-                        <p class="text-gray-700 text-base mt-1 text-start">{{ $pertanyaan }}</p>
+                        <p class="text-gray-700 text-base mt-1 text-justify">{!! $pertanyaan !!}</p>
                     </div>
                 @endforeach
             </div>

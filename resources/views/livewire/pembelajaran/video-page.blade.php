@@ -96,14 +96,7 @@
                             class="flex-shrink-0 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
                             4</div>
                         <p class="text-gray-700 mt-1">Apakah kamu ingin belajar lebih banyak tentang budaya yang ada di
-                            Indonesia? Kenapa?</p>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div
-                            class="flex-shrink-0 bg-purple-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
-                            5</div>
-                        <p class="text-gray-700 mt-1">Ceritakan satu hal yang membuat kamu kagum dari video yang kamu
-                            tonton!</p>
+                            Indonesia? Jelaskan alasannya?</p>
                     </div>
                 </div>
             </div>
