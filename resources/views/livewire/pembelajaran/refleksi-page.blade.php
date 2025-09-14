@@ -1,11 +1,11 @@
 <div class="w-full min-h-screen bg-teal-50 flex items-center justify-center p-4 md:p-8">
     {{-- Tombol Navigasi di Pojok Atas --}}
     <div class="absolute top-6 left-6 md:top-8 md:left-8 z-10">
-        @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-            <a href="{{ route('peta-petualangan') }}" wire:navigate>
-                <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost" />
-            </a>
-        @endif
+        <a href="{{ route('peta-petualangan') }}" wire:navigate>
+            <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost" />
+        </a>
+        {{-- @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+        @endif --}}
     </div>
 
     {{-- Kontainer Utama --}}
@@ -13,7 +13,8 @@
         <x-icon name="o-sparkles" class="w-16 h-16 mx-auto text-teal-500" />
         <h1 class="text-3xl md:text-4xl font-bold text-teal-800 mt-4">{{ $judul }}</h1>
         <p class="text-teal-700 mt-4 mb-8 text-lg">
-            Ini adalah kesempatanmu untuk bercerita. Tidak ada jawaban benar atau salah!
+            Ini adalah kesempatanmu untuk bercerita, merenung, dan menunjukkan aksi nyata. Ingat, tidak ada jawaban
+            benar atau salah!
         </p>
 
         <div class="bg-white p-6 rounded-2xl shadow-xl">

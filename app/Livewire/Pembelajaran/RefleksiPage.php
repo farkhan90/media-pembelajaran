@@ -31,7 +31,7 @@ class RefleksiPage extends Component
         }
 
         $this->pulau = $pulau;
-        $this->judul = "Refleksi Petualangan di Sulawesi";
+        $this->judul = "Refleksi & Aksi Petualangan";
         $this->daftarPertanyaan = [
             1 => "Coba ingat lagi saat JoJo dan Mika berdebat. Bagaimana ya, perasaan JoJo dan Mika saat itu? ",
             2 => "Video ini menunjukkan bahwa Indonesia punya banyak budaya yang indah. Apa satu hal yang kamu pelajari tentang budaya yang berbeda dari video ini? Mengapa penting bagi kita untuk tahu dan menghargai perbedaan itu?",

@@ -7,11 +7,11 @@
             <h1 class="text-xl md:text-2xl font-bold text-gray-800">{{ $judul }}</h1>
         </div>
         <div>
-            @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-                <a href="{{ route('peta-petualangan') }}" wire:navigate>
-                    <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost" />
-                </a>
-            @endif
+            <a href="{{ route('peta-petualangan') }}" wire:navigate>
+                <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost" />
+            </a>
+            {{-- @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+            @endif --}}
         </div>
     </header>
 

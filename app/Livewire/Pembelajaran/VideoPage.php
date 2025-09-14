@@ -6,6 +6,7 @@ use App\Models\ProgresPulauSiswa;
 use App\Models\SiswaPerkelas;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 #[Layout('components.layouts.guest')]
@@ -17,12 +18,15 @@ class VideoPage extends Component
     public ?string $pulauBerikutnya = null;
 
     public bool $sumateraSelesaiModal = false;
+    // Properti untuk form refleksi di modal Sumatera
+    #[Rule('required|string|min:100', message: 'Coba ceritakan sedikit lebih panjang ya!')]
+    public string $jawabanPemantik = '';
 
     // "Mini-database" untuk konten video statis Anda
     protected array $dataPulau = [
         'sumatera' => [
             'judul' => 'Video 1: Keberagaman Indonesia',
-            'file' => 'sumatera.mp4',
+            'file' => 'sumatera.m4v',
             'berikutnya' => 'jawa',
         ],
         'kalimantan' => [
@@ -86,15 +90,23 @@ class VideoPage extends Component
 
         // Simpan progres hanya untuk siswa
         if ($user->role === 'Siswa') {
+            // Siapkan data dasar yang akan disimpan
+            $dataProgres = ['waktu_selesai' => now()];
 
+            // Logika kondisional untuk Sumatera
+            if ($this->pulau === 'sumatera') {
+                $this->validateOnly('jawabanPemantik');
+                // Tambahkan jawaban pemantik ke data
+                $dataProgres['jawaban_pemantik'] = $this->jawabanPemantik;
+            }
+
+            // Gunakan updateOrCreate pada tabel progres yang benar
             ProgresPulauSiswa::updateOrCreate(
                 [
                     'user_id' => $user->id,
                     'nama_pulau' => $this->pulau,
                 ],
-                [
-                    'waktu_selesai' => now(),
-                ]
+                $dataProgres
             );
         }
 

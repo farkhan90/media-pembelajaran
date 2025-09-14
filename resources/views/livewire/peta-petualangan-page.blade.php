@@ -190,7 +190,7 @@
                     {{-- Baris kedua, beri x-ref dan style berbeda --}}
                     <span class="title-line-2 block text-3xl md:text-5xl text-gray-700"
                         style="-webkit-text-stroke: 1px #92400E; text-stroke: 1px #92400E;">
-                        Ayo kita mulai petualanganmu dari Pulau Sumatra
+                        Ayo kita mulai petualanganmu!
                     </span>
                 </h1>
 

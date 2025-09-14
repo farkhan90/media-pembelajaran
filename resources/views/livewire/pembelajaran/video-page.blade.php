@@ -7,17 +7,17 @@
     {{-- Tombol Navigasi di Pojok Atas --}}
     <div class="absolute top-6 left-6 md:top-8 md:left-8 z-10">
         {{-- Tombol Kembali hanya untuk Admin/Guru --}}
-        @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-            <a href="{{ route('peta-petualangan') }}" wire:navigate>
-                <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost text-white hover:bg-white/20" />
-            </a>
-        @endif
+        <a href="{{ route('peta-petualangan') }}" wire:navigate>
+            <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost text-white hover:bg-white/20" />
+        </a>
+        {{-- @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+        @endif --}}
     </div>
 
     {{-- Konten Utama dengan Animasi Masuk --}}
     <div class="text-center w-full overflow-scroll" x-data x-init="gsap.from($el, { y: 30, opacity: 0, duration: 0.8, ease: 'power2.out' })">
         <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ $judul }}</h1>
-        <p class="text-gray-400 mb-8">Tonton video ini sampai selesai untuk membuka pulau berikutnya!</p>
+        <p class="text-gray-400 mb-8">Selesaikan tantangan yang ada untuk membuka pulau berikutnya!</p>
 
         {{-- Kontainer Video --}}
         <div class="w-full max-w-4xl mx-auto aspect-video bg-black rounded-xl shadow-2xl shadow-primary/20">
@@ -63,49 +63,57 @@
                     Yuk, Pikirkan Sejenak!
                 </h2>
             </x-slot:header>
-            <div class="text-left">
-                <p class="mb-6 text-gray-600">
-                    Hebat, kamu sudah selesai menonton video pertama! Sebelum lanjut, coba jawab pertanyaan-pertanyaan
-                    ini.
-                </p>
+            <x-form wire:submit="tandaiSelesai">
+                <div class="text-left">
+                    <p class="mb-6 text-gray-600">
+                        Hebat, kamu sudah selesai menonton video pertama! Sebelum lanjut, coba jawab
+                        pertanyaan-pertanyaan
+                        ini.
+                    </p>
 
-                {{-- Daftar Pertanyaan Refleksi --}}
-                <div class="space-y-4">
-                    <div class="flex items-start gap-3">
-                        <div
-                            class="flex-shrink-0 bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
-                            1</div>
-                        <p class="text-gray-700 mt-1">Apa yang kamu pelajari dari video yang kamu tonton?</p>
+                    {{-- Daftar Pertanyaan Refleksi --}}
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                                1</div>
+                            <p class="text-gray-700 mt-1">Apa yang kamu pelajari dari video yang kamu tonton?</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 bg-teal-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                                2</div>
+                            <p class="text-gray-700 mt-1">Tuliskan budaya yang terlihat di video yang kamu sukai!
+                                Mengapa?
+                            </p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                                3</div>
+                            <p class="text-gray-700 mt-1">Bagaimana cara kita bisa menjaga keberagaman budaya seperti
+                                yang
+                                ada di video?</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                                4</div>
+                            <p class="text-gray-700 mt-1">Apakah kamu ingin belajar lebih banyak tentang budaya yang ada
+                                di
+                                Indonesia? Jelaskan alasannya?</p>
+                        </div>
                     </div>
-                    <div class="flex items-start gap-3">
-                        <div
-                            class="flex-shrink-0 bg-teal-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
-                            2</div>
-                        <p class="text-gray-700 mt-1">Tuliskan budaya yang terlihat di video yang kamu sukai! Mengapa?
-                        </p>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div
-                            class="flex-shrink-0 bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
-                            3</div>
-                        <p class="text-gray-700 mt-1">Bagaimana cara kita bisa menjaga keberagaman budaya seperti yang
-                            ada di video?</p>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div
-                            class="flex-shrink-0 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
-                            4</div>
-                        <p class="text-gray-700 mt-1">Apakah kamu ingin belajar lebih banyak tentang budaya yang ada di
-                            Indonesia? Jelaskan alasannya?</p>
-                    </div>
+                    <x-textarea label="Tuliskan jawabanmu di sini" wire:model="jawabanPemantik"
+                        placeholder="Aku belajar tentang..." rows="5"
+                        class="bg-white text-lg shadow-inner text-black" />
                 </div>
-            </div>
 
-            <x-slot:actions>
-                {{-- Tombol Lanjut sekarang ada di sini --}}
-                <x-button label="Lanjut ke Pulau Jawa" class="btn-primary w-full" wire:click="tandaiSelesai"
-                    spinner="tandaiSelesai" />
-            </x-slot:actions>
+                <x-slot:actions>
+                    <x-button label="Tonton Ulang" @click="$wire.sumateraSelesaiModal = false" />
+                    <x-button label="Lanjut ke Pulau Jawa" class="btn-primary" type="submit" spinner="tandaiSelesai" />
+                </x-slot:actions>
+            </x-form>
         </x-modal>
     @endif
 </div>

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('progres_pulau_siswas', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            // Kita tidak perlu kelas_id di sini, karena progres terikat pada user, bukan kelas
             $table->string('nama_pulau');
             $table->timestamp('waktu_selesai');
             $table->foreignUuid('histori_ujian_id')->nullable()->constrained('histori_ujians')->onDelete('set null');
