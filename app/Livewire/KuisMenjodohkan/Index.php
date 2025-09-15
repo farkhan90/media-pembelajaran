@@ -2,13 +2,10 @@
 
 namespace App\Livewire\KuisMenjodohkan;
 
-use App\Models\Kelas;
 use App\Models\KuisMenjodohkan;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 

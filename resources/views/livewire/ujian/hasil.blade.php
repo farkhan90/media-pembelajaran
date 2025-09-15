@@ -8,48 +8,48 @@
 
     {{-- TAMPILAN UNTUK ADMIN DAN GURU --}}
     @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-        <div class="space-y-4 mb-6">
-            {{-- Area Filter --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <x-select label="Pilih Sekolah" :options="$this->sekolahOptions()" wire:model.live="sekolahId" option-value="id"
-                    option-label="nama" placeholder="-- Semua Sekolah --" />
-                <x-select label="Pilih Kelas" :options="$this->kelasOptions()" wire:model.live="kelasId"
-                    placeholder="-- Pilih Kelas --" option-value="id" option-label="nama" :disabled="!$sekolahId" />
-                <x-select label="Pilih Kuis 1" :options="$this->ujianOptions()" wire:model.live="ujianId"
-                    placeholder="-- Pilih Kuis 1 --" :disabled="!$kelasId" option-value="id" option-label="judul" />
-            </div>
-        </div>
+        <x-card class="mt-8">
+            {{-- Hanya tampilkan pencarian untuk Admin/Guru --}}
+            @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+                <x-input placeholder="Cari nama siswa atau judul ujian..." wire:model.live.debounce.300ms="search"
+                    icon="o-magnifying-glass" class="w-full lg-w-1/3 mb-4" />
+            @endif
 
-        @if ($ujianId)
-            <x-card>
-                <x-input placeholder="Cari nama siswa..." wire:model.live.debounce.300ms="search"
-                    icon="o-magnifying-glass" class="w-full lg:w-1/3" />
-
-                <x-table :headers="$headers" :rows="$this->hasilUjians" with-pagination>
+            @if ($this->hasilUjians()->isNotEmpty())
+                <x-table :headers="$headers" :rows="$this->hasilUjians()" with-pagination>
                     @scope('cell_no', $histori)
                         {{ $this->hasilUjians()->firstItem() + $loop->index }}
                     @endscope
+
+                    @scope('cell_user.kelas_info', $histori)
+                        @if ($kelasSiswa = $histori->user->kelas->first())
+                            {{ $kelasSiswa->nama }} /
+                            <span class="text-gray-500">{{ $kelasSiswa->sekolah->nama }}</span>
+                        @else
+                            <x-badge value="Mandiri" class="badge-ghost" />
+                        @endif
+                    @endscope
+
                     @scope('cell_skor_akhir', $histori)
                         <x-badge :value="round($histori->skor_akhir, 2)" @class([
                             'badge-success' => $histori->skor_akhir >= 75,
                             'badge-warning' => $histori->skor_akhir < 75,
                         ]) />
                     @endscope
-                    @scope('cell_waktu_mulai', $histori)
-                        {{ \Carbon\Carbon::parse($histori->waktu_mulai)->translatedFormat('d M Y, H:i') }}
-                    @endscope
+
                     @scope('cell_waktu_selesai', $histori)
                         {{ \Carbon\Carbon::parse($histori->waktu_selesai)->translatedFormat('d M Y, H:i') }}
                     @endscope
+
                     @scope('actions', $histori)
                         <x-button label="Rincian" icon="o-eye" wire:click="lihatRincian('{{ $histori->id }}')"
-                            class="btn-sm btn-ghost" />
+                            class="btn-sm" />
                     @endscope
                 </x-table>
-            </x-card>
-        @else
-            <x-alert title="Silakan pilih filter di atas untuk melihat hasil ujian." icon="o-information-circle" />
-        @endif
+            @else
+                <x-alert title="Belum ada data hasil ujian." icon="o-information-circle" />
+            @endif
+        </x-card>
     @endif
 
     {{-- TAMPILAN UNTUK SISWA --}}
@@ -78,10 +78,10 @@
 
     {{-- MODAL UNTUK RINCIAN JAWABAN --}}
     @if ($selectedHistori)
-        <x-modal wire:model="detailModal" title="Rincian Jawaban: {{ $selectedHistori->user->nama }}"
+        <x-modal wire:model="detailModal" title="Rincian Jawaban: {{ $this->selectedHistori->user->nama }}"
             subtitle="Ujian: {{ $selectedHistori->ujian->judul }}" separator>
             <div class="h-[70vh] overflow-y-auto pr-4 -mr-4 space-y-4">
-                @foreach ($detailJawaban as $index => $soal)
+                @foreach ($this->detailJawaban as $index => $soal)
                     <div class="p-4 rounded-lg {{ $loop->odd ? 'bg-base-200' : 'bg-base-100' }}"
                         wire:key="detail-{{ $soal->id }}">
                         <div class="prose max-w-none">
@@ -133,9 +133,6 @@
                 <p>Halaman ini menampilkan laporan hasil pengerjaan Ujian Pilihan Ganda oleh siswa. Gunakan filter di
                     atas untuk menampilkan data yang spesifik.</p>
                 <ul>
-                    <li><strong>Filter Data:</strong> Pilih <strong>Sekolah</strong>, <strong>Kelas</strong>, lalu
-                        <strong>Ujian</strong> untuk melihat grafik dan tabel peringkat siswa yang telah mengerjakan.
-                    </li>
                     <li><strong>Grafik Skor:</strong> Grafik batang menampilkan sebaran skor semua siswa yang telah
                         menyelesaikan ujian yang dipilih, diurutkan dari yang tertinggi.</li>
                     <li><strong>Lihat Rincian:</strong> Klik tombol <x-badge value="Rincian" /> pada setiap baris siswa

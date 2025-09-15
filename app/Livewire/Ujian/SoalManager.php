@@ -27,12 +27,7 @@ class SoalManager extends Component
 
     public function mount(Ujian $ujian)
     {
-        $this->ujian = $ujian->load('kelas.guruPengampu');
-
-        $user = Auth::user();
-        if ($user->role === 'Guru' && $this->ujian->kelas->guru_pengampu_id !== $user->id) {
-            abort(403, 'Anda tidak memiliki akses ke ujian ini.');
-        }
+        $this->ujian = $ujian;
     }
 
     #[On('delete-confirmed')]

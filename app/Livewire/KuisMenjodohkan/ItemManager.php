@@ -40,7 +40,7 @@ class ItemManager extends Component
     #[Computed]
     public function kuis()
     {
-        return KuisMenjodohkan::with('kelas')->findOrFail($this->kuisId);
+        return KuisMenjodohkan::findOrFail($this->kuisId);
     }
 
     public function mount(KuisMenjodohkan $kuisMenjodohkan)

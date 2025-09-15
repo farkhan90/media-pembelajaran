@@ -6,6 +6,7 @@ use App\Models\HistoriUjian;
 use App\Models\Kelas;
 use App\Models\Sekolah;
 use App\Models\Ujian;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -17,11 +18,6 @@ use Livewire\WithPagination;
 class Hasil extends Component
 {
     use WithPagination;
-
-    // Properti untuk Filter (hanya untuk Admin/Guru)
-    public ?string $sekolahId = null;
-    public ?string $kelasId = null;
-    public ?string $ujianId = null;
 
     // Properti untuk Modal Rincian
     public ?HistoriUjian $selectedHistori = null;
@@ -35,66 +31,34 @@ class Hasil extends Component
 
     public function mount()
     {
+        // Setup header default untuk Admin/Guru
         $this->headers = [
             ['key' => 'no', 'label' => 'No.', 'class' => 'w-1'],
             ['key' => 'user.nama', 'label' => 'Nama Siswa'],
+            ['key' => 'ujian.judul', 'label' => 'Ujian yang Dikerjakan'],
+            ['key' => 'user.kelas_info', 'label' => 'Kelas / Sekolah'],
             ['key' => 'skor_akhir', 'label' => 'Skor', 'class' => 'w-24 text-center'],
-            ['key' => 'waktu_mulai', 'label' => 'Waktu Mulai'],
-            ['key' => 'waktu_selesai', 'label' => 'Waktu Selesai'],
         ];
 
-        // Jika yang login adalah siswa, tidak perlu filter, langsung isi data
+        // Sembunyikan kolom kelas/sekolah untuk Guru
+        if (Auth::user()->role === 'Guru') {
+            unset($this->headers[3]);
+        }
+
+        // Setup header untuk Siswa
         if (Auth::user()->role === 'Siswa') {
             $this->headers = [
-                ['key' => 'no', 'label' => 'No.', 'class' => 'w-1'],
+                ['key' => 'no', 'label' => 'No.'],
                 ['key' => 'ujian.judul', 'label' => 'Judul Ujian'],
-                ['key' => 'skor_akhir', 'label' => 'Skor', 'class' => 'w-24 text-center'],
+                ['key' => 'skor_akhir', 'label' => 'Skor'],
                 ['key' => 'waktu_selesai', 'label' => 'Tanggal Selesai'],
             ];
         }
     }
-
-    // Opsi filter disesuaikan dengan role
-    #[Computed(cache: true)]
-    public function sekolahOptions()
-    {
-        $user = Auth::user();
-
-        if ($user->role === 'Guru') {
-            return Sekolah::whereHas('kelas', function ($query) use ($user) {
-                $query->where('guru_pengampu_id', $user->id);
-            })->distinct()->orderBy('nama')->get();
-        }
-
-        // Untuk Admin (dan role lain jika ada), selalu kembalikan semua sekolah
-        return Sekolah::orderBy('nama')->get();
-    }
-
-    #[Computed(cache: true)]
-    public function kelasOptions()
-    {
-        // Jika tidak ada sekolah yang dipilih, langsung kembalikan koleksi kosong.
-        if (!$this->sekolahId) {
-            return collect();
-        }
-
-        $user = Auth::user();
-        $query = Kelas::where('sekolah_id', $this->sekolahId);
-
-        if ($user->role === 'Guru') {
-            $query->where('guru_pengampu_id', $user->id);
-        }
-
-        return $query->orderBy('nama')->get();
-    }
-
     #[Computed]
     public function ujianOptions()
     {
-        if (!$this->kelasId) {
-            return collect();
-        }
-        return Ujian::where('kelas_id', $this->kelasId)->get(['id', 'judul']);
+        return Ujian::where('status', 'Published')->orderBy('judul')->get();
     }
 
     // Query utama untuk mendapatkan hasil ujian
@@ -102,25 +66,34 @@ class Hasil extends Component
     public function hasilUjians()
     {
         $user = Auth::user();
+
         $query = HistoriUjian::query()
-            ->with(['user', 'ujian'])
+            ->with(['user.kelas.sekolah', 'ujian'])
             ->where('status', '!=', 'Mengerjakan');
 
+        // Logika otorisasi
         if ($user->role === 'Siswa') {
             $query->where('user_id', $user->id);
-        } else {
-            // Untuk Admin dan Guru, ujian HARUS dipilih
-            if (!$this->ujianId) {
-                return HistoriUjian::where('id', false)->paginate(15); // Query yang dijamin kosong
-            }
-            $query->where('ujian_id', $this->ujianId);
-        }
+        } elseif ($user->role === 'Guru') {
+            // Dapatkan ID siswa dari kelas yang diampu guru
+            $siswaIds = User::whereHas('kelas', function ($q) use ($user) {
+                $q->whereIn('kelas.id', $user->kelasDiampu->pluck('id'));
+            })->pluck('users.id');
 
+            // Filter histori berdasarkan ID siswa tersebut
+            $query->whereIn('user_id', $siswaIds);
+        }
+        // Untuk Admin, tidak ada filter tambahan, semua akan diambil.
+
+        // Filter pencarian
         if ($this->search) {
-            $query->whereHas('user', fn($q) => $q->where('nama', 'like', "%{$this->search}%"));
+            $query->where(function ($q) {
+                $q->whereHas('user', fn($sq) => $sq->where('nama', 'like', "%{$this->search}%"))
+                    ->orWhereHas('ujian', fn($sq) => $sq->where('judul', 'like', "%{$this->search}%"));
+            });
         }
 
-        return $query->orderBy('waktu_selesai', 'desc')->paginate(15);
+        return $query->orderBy('waktu_selesai', 'desc')->paginate(20);
     }
 
     // Dipanggil saat filter diubah
