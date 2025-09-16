@@ -62,7 +62,10 @@
                     </a>
                 @endif
                 {{-- Tombol Logout --}}
-                <livewire:auth.logout />
+                <a href="{{ route('logout') }}" wire:navigate.prevent>
+                    <x-button label="Logout" icon="o-arrow-left-on-rectangle" class="btn-sm btn-outline btn-error"
+                        responsive />
+                </a>
             </nav>
         </header>
 
@@ -210,7 +213,8 @@
                                 $isClickable = in_array($pulau['status'], ['aktif', 'terbuka']);
                             @endphp
 
-                            <div class="island-container absolute {{ $pulau['lebar'] }}" style="{{ $pulau['posisi'] }}"
+                            <div class="island-container absolute {{ $pulau['lebar'] }}"
+                                style="{{ $pulau['posisi'] }}"
                                 @if ($isClickable) @@mouseover="onIslandHover($el)"
                                     @@mouseleave="onIslandLeave($el)"
                                     @@click="onIslandClick($el, '{{ $pulau['nama'] }}', '{{ $this->getLinkForPulau($pulau['id']) }}')" @endif>

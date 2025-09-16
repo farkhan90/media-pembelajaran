@@ -63,7 +63,10 @@
                                 <x-menu-item>
                                     <x-theme-toggle title="Theme" />
                                 </x-menu-item>
-                                <livewire:auth.logout class="w-full" />
+                                <a href="{{ route('logout') }}" wire:navigate.prevent>
+                                    <x-button label="Logout" icon="o-arrow-left-on-rectangle"
+                                        class="btn-sm btn-outline btn-error" responsive />
+                                </a>
                             </x-dropdown>
                         </x-slot:actions>
                     </x-list-item>

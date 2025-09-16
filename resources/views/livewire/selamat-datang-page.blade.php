@@ -32,7 +32,10 @@
                             class="btn-ghost bg-gray-50 text-gray-700 hover:bg-gray-200" />
                     </a>
                 @endif
-                <livewire:auth.logout />
+                <a href="{{ route('logout') }}" wire:navigate.prevent>
+                    <x-button label="Logout" icon="o-arrow-left-on-rectangle" class="btn-sm btn-outline btn-error"
+                        responsive />
+                </a>
             </nav>
         </header>
 

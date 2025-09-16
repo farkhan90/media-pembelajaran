@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\FileController;
 use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
@@ -75,6 +76,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-penilaian/{pulau}', PenilaianLaporan::class)
         ->name('penilaian.laporan')
         ->middleware('role:Admin,Guru');
+    Route::get('logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->name('logout');
 });
 
 Route::middleware(['auth', 'role:Siswa'])->group(function () {
