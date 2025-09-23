@@ -83,12 +83,12 @@
                         <x-menu-item title="Kelas" icon="o-table-cells" link="{{ route('kelas.index') }}" />
                         <x-menu-item title="Manajemen User" icon="o-users" link="{{ route('users.index') }}" />
                     </x-menu-sub>
-                @endif
-                @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-                    <x-menu-item title="Siswa per Kelas" icon="o-identification" link="{{ route('siswa.manage') }}" />
                     <x-menu-item title="Manajemen Kuis 1" icon="o-academic-cap" link="{{ route('ujian.index') }}" />
                     <x-menu-item title="Manajemen Kuis 2" icon="o-arrows-right-left"
                         link="{{ route('kuis.index') }}" />
+                @endif
+                @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+                    <x-menu-item title="Siswa per Kelas" icon="o-identification" link="{{ route('siswa.manage') }}" />
                 @endif
                 @if (auth()->user()->role === 'Siswa')
                     <x-menu-item title="Daftar Kuis 1" icon="o-academic-cap" link="{{ route('ujian.list') }}" />
