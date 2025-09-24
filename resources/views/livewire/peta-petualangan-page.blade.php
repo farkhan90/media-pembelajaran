@@ -179,7 +179,7 @@
                     <span class="title-line-1 block"
                         style="
                             font-family: 'Lilita One', cursive;
-                            font-size: 4.5rem; /* setara dengan text-7xl */
+                            font-size: 3.5rem; /* setara dengan text-7xl */
                             color: black;
                             text-align: center;
                             margin-bottom: 2rem;
