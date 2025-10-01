@@ -147,6 +147,9 @@
                                             <source src="{{ asset($langkahAktif->konten_path) }}" type="video/mp4">
                                         </video>
                                     </div>
+                                    @if ($langkahAktif->keterangan)
+                                        <p class="text-gray-600 mb-4">{{ $langkahAktif->keterangan }}</p>
+                                    @endif
                                 @elseif ($langkahAktif->tipe === 'audio')
                                     <div class="flex flex-col items-center justify-center">
 

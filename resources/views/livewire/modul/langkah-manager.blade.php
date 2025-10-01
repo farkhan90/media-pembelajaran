@@ -16,6 +16,12 @@
         {{-- Tabel untuk menampilkan daftar langkah --}}
         <x-table :headers="$headers" :rows="$langkahs" with-pagination>
 
+            @scope('cell_judul', $langkah)
+                <div class="font-bold hover:underline">{{ $langkah->judul }}</div>
+                {{-- Tampilkan keterangan di bawah judul --}}
+                <div class="text-xs text-gray-500">{{ Str::limit($langkah->keterangan, 50) }}</div>
+            @endscope
+
             {{-- Scope untuk Tipe Konten --}}
             @scope('cell_tipe', $langkah)
                 @php
@@ -76,6 +82,8 @@
         <x-form wire:submit="save">
             <div class="space-y-4">
                 <x-input label="Judul Langkah" wire:model="judul" />
+                <x-textarea label="Keterangan Singkat (Opsional)" wire:model="keterangan" rows="3"
+                    hint="Akan ditampilkan sebagai subjudul di halaman player siswa." />
                 <x-input label="Urutan" wire:model="urutan" type="number" />
                 <x-select label="Tipe Konten" :options="$tipeOptions" wire:model.live="tipe" />
 

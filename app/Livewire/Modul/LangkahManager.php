@@ -25,6 +25,7 @@ class LangkahManager extends Component
 
     // Properti Form
     public string $judul = '';
+    public string $keterangan = '';
     public string $tipe = 'video';
 
     // Izinkan properti ini menjadi null
@@ -97,6 +98,7 @@ class LangkahManager extends Component
         $this->langkah = $langkah;
 
         $this->judul = $langkah->judul;
+        $this->keterangan = $langkah->keterangan;
         $this->tipe = $langkah->tipe;
         $this->konten_path = $langkah->konten_path;
         $this->konten_teks = $langkah->konten_teks;
@@ -116,6 +118,7 @@ class LangkahManager extends Component
         // Validasi dasar
         $validated = $this->validate([
             'judul' => 'required|string|max:255',
+            'keterangan' => 'nullable|string',
             'tipe' => 'required|in:video,audio,canva,pdf,soal_esai,penilaian_akhir',
             'urutan' => 'required|integer',
         ]);
@@ -150,6 +153,7 @@ class LangkahManager extends Component
             'isEditMode',
             'langkah',
             'judul',
+            'keterangan',
             'tipe',
             'konten_path',
             'konten_teks',
