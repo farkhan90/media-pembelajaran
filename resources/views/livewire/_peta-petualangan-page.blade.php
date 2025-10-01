@@ -168,15 +168,30 @@
                         delay: 0.3 // Muncul sedikit setelah pin mulai jatuh
                     });
                 }
-            });" class="w-full max-w-6xl mx-auto">
-                <h1 class="font-lilita text-5xl md:text-7xl text-black text-center mb-4"
+            });" class="w-full max-w-xl lg:max-w-4xl mx-auto">
+                <h1 class="font-lilita text-5xl md:text-7xl text-black text-center mb-8"
                     style="
                         -webkit-text-stroke: 2px #1E3A8A;
                         text-stroke: 2px #1E3A8A;
                         paint-order: stroke fill;
                     ">
+                    {{-- Baris pertama, beri x-ref --}}
+                    <span class="title-line-1 block"
+                        style="
+                            font-family: 'Lilita One', cursive;
+                            font-size: 3.5rem; /* setara dengan text-7xl */
+                            color: black;
+                            text-align: center;
+                            margin-bottom: 2rem;
+                            -webkit-text-stroke: 2px #1E3A8A;
+                            text-stroke: 2px #1E3A8A;
+                            paint-order: stroke fill;
+                            opacity: 0; /* Untuk animasi */
+                        ">PETA
+                        INDONESIA</span>
+
                     {{-- Baris kedua, beri x-ref dan style berbeda --}}
-                    <span class="title-line-2 block text-xl md:text-3xl lg:text-5xl text-gray-700"
+                    <span class="title-line-2 block text-3xl md:text-5xl text-gray-700"
                         style="-webkit-text-stroke: 1px #92400E; text-stroke: 1px #92400E;">
                         Ayo kita mulai petualanganmu!
                     </span>
@@ -187,96 +202,65 @@
                 {{-- ============================================= --}}
                 <div class="relative w-full">
                     {{-- Layer 1: Peta Dasar (Latar Belakang) --}}
-                    <img x-ref="mapBase" src="{{ asset('assets/img/jalur.png') }}" alt="Peta Dasar Petualangan"
-                        class="w-full h-auto" style="opacity: 100;">
+                    <img x-ref="mapBase" src="{{ asset('assets/img/peta-indonesia.svg') }}" alt="Peta Dasar Indonesia"
+                        class="w-full h-auto" style="opacity: 0;">
 
                     {{-- Layer 2: Pulau-Pulau Interaktif (SVG) --}}
-                    {{-- Ganti div x-ref="islands" yang lama dengan ini --}}
-
-                    <div x-ref="islands" x-cloak>
-                        @php
-                            // Dapatkan data status sekali saja di awal untuk efisiensi
-                            $statusPulau = $this->pulauStatus();
-                        @endphp
-
-                        {{-- Lakukan perulangan pada data modul dari komponen PHP --}}
-                        @foreach ($this->moduls() as $modul)
+                    <div x-ref="islands">
+                        {{-- Lakukan perulangan pada data pulau dari komponen --}}
+                        @foreach ($this->pulauData() as $pulau)
                             @php
-                                // Ambil status untuk modul/pulau saat ini
-                                $status = $statusPulau[$modul->nama_pulau] ?? 'terkunci';
-                                $isClickable = in_array($status, ['aktif', 'terbuka']);
-
-                                // Definisikan posisi & ukuran secara manual berdasarkan urutan.
-                                // CATATAN: Cara terbaik adalah menyimpan ini di database dalam tabel 'moduls'.
-                                $styles = [
-                                    1 => ['posisi' => 'top: 10%; left: 0%;', 'lebar' => 'w-[19%]'],
-                                    2 => ['posisi' => 'top: 0%; left: 33%;', 'lebar' => 'w-[20%]'],
-                                    3 => ['posisi' => 'top: 59%; left: 6%;', 'lebar' => 'w-[24%]'],
-                                    4 => ['posisi' => 'top: 3.5%; left: 66.7%;', 'lebar' => 'w-[16%]'],
-                                    5 => ['posisi' => 'top: 72%; left: 44%;', 'lebar' => 'w-[16.6%]'],
-                                    6 => ['posisi' => 'top: 61%; right: 0%;', 'lebar' => 'w-[25%]'],
-                                ];
-
-                                $style = $styles[$modul->urutan] ?? [
-                                    'posisi' => 'top: 50%; left: 50%;',
-                                    'lebar' => 'w-[20%]',
-                                ];
+                                $isClickable = in_array($pulau['status'], ['aktif', 'terbuka']);
                             @endphp
 
-                            {{-- Kontainer utama untuk setiap pulau/modul --}}
-                            <div class="island-container absolute {{ $style['lebar'] }}"
-                                style="{{ $style['posisi'] }}" {{-- Tambahkan event listener hanya jika pulau bisa diklik --}}
+                            <div class="island-container absolute {{ $pulau['lebar'] }}"
+                                style="{{ $pulau['posisi'] }}"
                                 @if ($isClickable) @@mouseover="onIslandHover($el)"
-                                @@mouseleave="onIslandLeave($el)"
-                                @@click="onIslandClick($el, '{{ $modul->judul }}', '{{ $this->getLinkForPulau($modul->id) }}')" @endif>
-                                {{-- Gambar SVG Pulau --}}
-                                <img src="{{ route('modul.pulau.gambar', $modul->id) }}" {{-- Gunakan rute aman untuk gambar --}}
-                                    alt="Pulau {{ $modul->judul }}" @class([
+                                    @@mouseleave="onIslandLeave($el)"
+                                    @@click="onIslandClick($el, '{{ $pulau['nama'] }}', '{{ $this->getLinkForPulau($pulau['id']) }}')" @endif>
+                                <img src="{{ asset('assets/img/islands/' . $pulau['id'] . '.svg') }}"
+                                    alt="Pulau {{ $pulau['nama'] }}" @class([
                                         'island-svg w-full transition-all duration-300',
                                         'cursor-pointer' => $isClickable,
-                                        'opacity-40 grayscale cursor-not-allowed' => $status === 'terkunci',
-                                        'opacity-60 grayscale' => $status === 'selesai' && !$isClickable,
+                                        'opacity-40 grayscale cursor-not-allowed' =>
+                                            $pulau['status'] === 'terkunci',
+                                        'opacity-60 grayscale' => $pulau['status'] === 'selesai',
                                     ])>
 
-                                {{-- Papan Penanda (Sign) --}}
                                 <div @class([
-                                    'sign-group absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none',
-                                    'flex' => $status !== 'terkunci', // Tampilkan jika tidak terkunci
-                                    'hidden' => $status === 'terkunci',
-                                ])>
-                                    {{-- Ikon centang jika sudah selesai atau terbuka (mode jelajah bebas) --}}
-                                    @if ($status === 'selesai' || $status === 'terbuka')
+                                    'sign-group absolute -translate-x-1/2 flex flex-col items-center pointer-events-none',
+                                    'flex' => $pulau['status'] !== 'terkunci',
+                                    'hidden' => $pulau['status'] === 'terkunci',
+                                ]) style="{{ $pulau['posisipin'] }}">
+                                    {{-- Tampilkan centang jika sudah selesai atau terbuka --}}
+                                    @if ($pulau['status'] == 'selesai' || $pulau['status'] == 'terbuka')
                                         <x-icon name="o-check-badge"
-                                            class="w-10 h-10 text-success absolute -top-2 -right-6 bg-white rounded-full p-1 shadow-lg" />
+                                            class="w-10 h-10 text-success absolute -top-3 -right-10 bg-white rounded-full p-1 shadow-lg" />
                                     @endif
 
-                                    @php
-                                        // Logika untuk warna pin dan papan nama
-                                        $warna = match ($status) {
-                                            'aktif' => 'primary',
-                                            'selesai' => 'gray-400',
-                                            'terbuka' => 'success',
-                                            default => 'gray-300',
-                                        };
-                                    @endphp
-
                                     <x-icon name="s-map-pin"
-                                        class="sign-pin w-10 h-10 mb-5 text-{{ $warna }} drop-shadow-lg" />
-                                    <div
-                                        class="sign-board bg-{{ $warna }} text-white font-bold text-sm text-center px-3 py-1 rounded-md shadow-lg -mt-5 z-10">
-                                        {{ $modul->judul }}
+                                        class="sign-pin w-10 h-10 text-{{ $pulau['warna'] }} drop-shadow-lg" />
+                                    <div @class([
+                                        'sign-board text-white font-bold text-sm text-center px-3 py-1 rounded-md shadow-lg z-10',
+                                        'bg-primary' => $pulau['warna'] === 'primary',
+                                        'bg-secondary' => $pulau['warna'] === 'secondary',
+                                        'bg-accent' => $pulau['warna'] === 'accent',
+                                        'bg-warning' => $pulau['warna'] === 'warning',
+                                        'bg-info' => $pulau['warna'] === 'info',
+                                    ])>
+                                        {{ $pulau['nama'] }}
                                     </div>
 
-                                    {{-- Efek 'ping' hanya untuk pulau yang aktif --}}
-                                    @if ($status === 'aktif')
+                                    @if ($pulau['status'] == 'aktif')
                                         <span
-                                            class="absolute top-0 left-0 w-full h-full bg-primary rounded-full animate-ping opacity-75"></span>
+                                            class="absolute top-0 left-0 w-full h-full bg-{{ $pulau['warna'] }} rounded-full animate-ping opacity-50"></span>
                                     @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
+                {{-- ============================================= --}}
             </div>
         </main>
     </div>

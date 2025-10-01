@@ -13,6 +13,8 @@
     <meta name="theme-color" content="#ffffff">
     <title>{{ 'Dashboard - SIJAKA' }}</title>
 
+    <script src="https://cdn.tiny.cloud/1/ku3nhu0lnokxa4x7tgfmcpufpzw4cd7pvl3ltqsq70sox4xf/tinymce/8/tinymce.min.js"
+        referrerpolicy="origin" crossorigin="anonymous"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -77,25 +79,74 @@
                 <x-menu-item title="Beranda" icon="o-home" link="/dashboard" />
                 <x-menu-item title="Halaman Utama" icon="o-sparkles" link="{{ route('selamat-datang') }}"
                     wire:navigate />
+                {{-- ======================================================= --}}
+                {{--                      MENU KHUSUS ADMIN                  --}}
+                {{-- ======================================================= --}}
                 @if (auth()->user()->role === 'Admin')
-                    <x-menu-sub title="Master Data" icon="o-circle-stack">
-                        <x-menu-item title="Sekolah" icon="o-building-office-2" link="{{ route('sekolah.index') }}" />
-                        <x-menu-item title="Kelas" icon="o-table-cells" link="{{ route('kelas.index') }}" />
-                        <x-menu-item title="Manajemen User" icon="o-users" link="{{ route('users.index') }}" />
+                    <x-menu-separator />
+
+                    <x-menu-sub title="Manajemen Konten" icon="o-pencil-square">
+                        <x-menu-item title="Modul (Pulau)" icon="o-map-pin" link="{{ route('modul.index') }}"
+                            wire:navigate />
+                        <x-menu-item title="Ujian (Pilgan)" icon="o-academic-cap" link="{{ route('ujian.index') }}"
+                            wire:navigate />
+                        <x-menu-item title="Kuis (Menjodohkan)" icon="o-puzzle-piece" link="{{ route('kuis.index') }}"
+                            wire:navigate />
                     </x-menu-sub>
-                    <x-menu-item title="Manajemen Kuis 1" icon="o-academic-cap" link="{{ route('ujian.index') }}" />
-                    <x-menu-item title="Manajemen Kuis 2" icon="o-arrows-right-left"
-                        link="{{ route('kuis.index') }}" />
+
+                    <x-menu-sub title="Manajemen Data Master" icon="o-circle-stack">
+                        <x-menu-item title="Sekolah" icon="o-building-office-2" link="{{ route('sekolah.index') }}"
+                            wire:navigate />
+                        <x-menu-item title="Kelas" icon="o-table-cells" link="{{ route('kelas.index') }}"
+                            wire:navigate />
+                        <x-menu-item title="User" icon="o-users" link="{{ route('users.index') }}" wire:navigate />
+                    </x-menu-sub>
+
+                    <x-menu-sub title="Laporan & Siswa" icon="o-chart-bar">
+                        <x-menu-item title="Siswa per Kelas" icon="o-identification" link="{{ route('siswa.manage') }}"
+                            wire:navigate />
+                        <x-menu-item title="Hasil Ujian" icon="o-chart-bar-square" link="{{ route('ujian.hasil') }}"
+                            wire:navigate />
+                        <x-menu-item title="Hasil Kuis" icon="o-presentation-chart-line"
+                            link="{{ route('kuis.hasil') }}" wire:navigate />
+                        <x-menu-item title="Jawaban Esai" icon="o-document-text" link="{{ route('laporan.esai') }}"
+                            wire:navigate />
+                    </x-menu-sub>
+
+                    {{-- ======================================================= --}}
+                    {{--                       MENU KHUSUS GURU                  --}}
+                    {{-- ======================================================= --}}
+                @elseif(auth()->user()->role === 'Guru')
+                    <x-menu-separator />
+                    <x-menu-item title="Kelola Siswa" icon="o-identification" link="{{ route('siswa.manage') }}"
+                        wire:navigate />
+
+                    <x-menu-sub title="Laporan Siswa" icon="o-chart-bar">
+                        <x-menu-item title="Hasil Ujian" icon="o-chart-bar-square" link="{{ route('ujian.hasil') }}"
+                            wire:navigate />
+                        <x-menu-item title="Hasil Kuis" icon="o-presentation-chart-line"
+                            link="{{ route('kuis.hasil') }}" wire:navigate />
+                        <x-menu-item title="Jawaban Refleksi" icon="o-document-text"
+                            link="{{ route('laporan.esai') }}" wire:navigate />
+                    </x-menu-sub>
+
+                    {{-- ======================================================= --}}
+                    {{--                       MENU KHUSUS SISWA                 --}}
+                    {{-- ======================================================= --}}
+                @elseif(auth()->user()->role === 'Siswa')
+                    <x-menu-separator />
+                    <x-menu-item title="Daftar Ujian" icon="o-academic-cap" link="{{ route('ujian.list') }}"
+                        wire:navigate />
+                    <x-menu-item title="Daftar Kuis" icon="o-puzzle-piece" link="{{ route('kuis.list') }}"
+                        wire:navigate />
+
+                    <x-menu-sub title="Riwayat & Hasil" icon="o-archive-box">
+                        <x-menu-item title="Hasil Ujian" icon="o-chart-bar-square" link="{{ route('ujian.hasil') }}"
+                            wire:navigate />
+                        <x-menu-item title="Hasil Kuis" icon="o-presentation-chart-line"
+                            link="{{ route('kuis.hasil') }}" wire:navigate />
+                    </x-menu-sub>
                 @endif
-                @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
-                    <x-menu-item title="Siswa per Kelas" icon="o-identification" link="{{ route('siswa.manage') }}" />
-                @endif
-                @if (auth()->user()->role === 'Siswa')
-                    <x-menu-item title="Daftar Kuis 1" icon="o-academic-cap" link="{{ route('ujian.list') }}" />
-                    <x-menu-item title="Daftar Kuis 2" icon="o-puzzle-piece" link="{{ route('kuis.list') }}" />
-                @endif
-                <x-menu-item title="Hasil Kuis 1" icon="o-chart-bar-square" link="{{ route('ujian.hasil') }}" />
-                <x-menu-item title="Hasil Kuis 2" icon="o-presentation-chart-line" link="{{ route('kuis.hasil') }}" />
             </x-menu>
         </x-slot:sidebar>
 

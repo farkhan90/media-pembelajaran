@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\ProgresPulauSiswa;
-use App\Models\SiswaPerkelas;
+use App\Models\Modul;
+use App\Models\ProgresLangkah;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -12,73 +12,77 @@ use Livewire\Component;
 #[Layout('components.layouts.guest')]
 class PetaPetualanganPage extends Component
 {
-    public array $progresSiswa = [];
-    protected array $urutanPulau = ['sumatera', 'jawa', 'kalimantan', 'sulawesi', 'papua'];
+    public array $progresSiswa = []; // Tetap array dari nama_pulau
 
     public function mount()
     {
         if (Auth::user()->role === 'Siswa') {
-            $this->progresSiswa = ProgresPulauSiswa::where('user_id', Auth::id())
-                ->pluck('nama_pulau')
-                ->toArray();
+            // Kita tidak lagi butuh progres per pulau, tapi per langkah
+            // Mari kita ambil langkah terakhir yang diselesaikan
+            $langkahSelesai = ProgresLangkah::where('user_id', Auth::id())
+                ->join('langkahs', 'progres_langkahs.langkah_id', '=', 'langkahs.id')
+                ->orderBy('langkahs.urutan', 'desc')
+                ->join('moduls', 'langkahs.modul_id', '=', 'moduls.id')
+                ->orderBy('moduls.urutan', 'desc')
+                ->first('moduls.nama_pulau');
+
+            $this->progresSiswa['pulau_terakhir'] = $langkahSelesai?->nama_pulau;
         }
+    }
+
+    #[Computed]
+    public function moduls()
+    {
+        // Ambil semua modul yang sudah di-publish, urutkan
+        return Modul::where('is_published', true)->orderBy('urutan')->get();
     }
 
     #[Computed]
     public function pulauStatus(): array
     {
-        if (in_array(Auth::user()->role, ['Admin', 'Guru']) || in_array('papua', $this->progresSiswa)) {
-            return array_fill_keys($this->urutanPulau, 'terbuka');
+        $user = Auth::user();
+        $urutanPulau = $this->moduls()->pluck('nama_pulau')->toArray();
+
+        // Mode Jelajah Bebas
+        if (in_array($user->role, ['Admin', 'Guru']) || $this->isPetualanganSelesai()) {
+            return array_fill_keys($urutanPulau, 'terbuka');
         }
 
+        // Mode Petualangan
         $status = [];
-        $pulauAktifDitemukan = false;
+        $progresTerakhir = $this->progresSiswa['pulau_terakhir'] ?? null;
+        $progresIndex = is_null($progresTerakhir) ? -1 : array_search($progresTerakhir, $urutanPulau);
 
-        foreach ($this->urutanPulau as $pulau) {
-            if (in_array($pulau, $this->progresSiswa)) {
+        foreach ($urutanPulau as $index => $pulau) {
+            if ($index <= $progresIndex) {
                 $status[$pulau] = 'selesai';
-            } elseif (!$pulauAktifDitemukan) {
+            } elseif ($index === $progresIndex + 1) {
                 $status[$pulau] = 'aktif';
-                $pulauAktifDitemukan = true;
             } else {
                 $status[$pulau] = 'terkunci';
             }
         }
+
         return $status;
     }
 
-    // Helper untuk membuat link
-    public function getLinkForPulau(string $pulau): string
+    // Helper untuk cek apakah semua modul sudah selesai
+    public function isPetualanganSelesai(): bool
     {
-        if ($pulau === 'papua') {
-            if (Auth::user()->role === 'Siswa') {
-                return route('penilaian.runner', ['pulau' => 'papua']);
-            } else {
-                return route('penilaian.laporan', ['pulau' => 'papua']);
-            }
-        }
-        $routes = [
-            'sumatera'   => route('pembelajaran.video', ['pulau' => 'sumatera']),
-            'jawa'       => route('pembelajaran.materi', ['pulau' => 'jawa']),
-            'kalimantan' => route('pembelajaran.video', ['pulau' => 'kalimantan']),
-            'sulawesi'   => route('pembelajaran.refleksi', ['pulau' => 'sulawesi']),
-            // 'papua'      => route('penilaian.runner', ['pulau' => 'papua'])
-        ];
-        return $routes[$pulau] ?? '#';
+        $modulTerakhir = $this->moduls()->last();
+        if (!$modulTerakhir) return false;
+
+        $langkahTerakhir = $modulTerakhir->langkahs()->orderBy('urutan', 'desc')->first();
+        if (!$langkahTerakhir) return false;
+
+        return ProgresLangkah::where('user_id', Auth::id())
+            ->where('langkah_id', $langkahTerakhir->id)
+            ->exists();
     }
 
-    #[Computed]
-    public function pulauData(): array
+    public function getLinkForPulau(string $modulId): string
     {
-        $statusPulau = $this->pulauStatus();
-
-        return [
-            ['id' => 'sumatera', 'nama' => 'Sumatera', 'posisi' => 'top: 0%; left: 0%;', 'lebar' => 'w-[29.5%]', 'status' => $statusPulau['sumatera'], 'warna' => 'primary', 'posisipin' => 'top: 40%; left: 50%;'],
-            ['id' => 'jawa', 'nama' => 'Jawa', 'posisi' => 'top: 69%; left: 23%;', 'lebar' => 'w-[58.5%]', 'status' => $statusPulau['jawa'], 'warna' => 'secondary', 'posisipin' => 'top: 0%; left: 20%;'],
-            ['id' => 'kalimantan', 'nama' => 'Kalimantan', 'posisi' => 'top: 7%; left: 30.5%;', 'lebar' => 'w-[23%]', 'status' => $statusPulau['kalimantan'], 'warna' => 'accent', 'posisipin' => 'top: 30%; left: 45%;'],
-            ['id' => 'sulawesi', 'nama' => 'Sulawesi', 'posisi' => 'top: 22.4%; left: 52.5%;', 'lebar' => 'w-[17.5%]', 'status' => $statusPulau['sulawesi'], 'warna' => 'warning', 'posisipin' => 'top: 20%; left: 20%;'],
-            ['id' => 'papua', 'nama' => 'Papua', 'posisi' => 'top: 18%; right: 0%', 'lebar' => 'w-[29.5%]', 'status' => $statusPulau['papua'], 'warna' => 'info', 'posisipin' => 'top: 30%; left: 80%;'],
-        ];
+        return route('pembelajaran.modul.player', ['modul' => $modulId]);
     }
 
     public function render()

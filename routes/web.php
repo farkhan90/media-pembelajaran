@@ -5,6 +5,7 @@ use App\Http\Controllers\FileController;
 use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
 use App\Livewire\Dashboard;
+use App\Livewire\Modul\Index as ModulIndex;
 use App\Livewire\Sekolah\Index as SekolahIndex;
 use App\Livewire\Kelas\Index as KelasIndex;
 use App\Livewire\Users\Index as UserIndex;
@@ -19,8 +20,10 @@ use App\Livewire\KuisMenjodohkan\ItemManager as KuisItemManager;
 use App\Livewire\KuisMenjodohkan\Pengerjaan as KuisPengerjaan;
 use App\Livewire\KuisMenjodohkan\Daftar as KuisDaftar;
 use App\Livewire\KuisMenjodohkan\Hasil as KuisHasil;
-use App\Livewire\Pembelajaran\KuisPage;
+use App\Livewire\Laporan\JawabanEsai;
+use App\Livewire\Modul\LangkahManager;
 use App\Livewire\Pembelajaran\MateriPage;
+use App\Livewire\Pembelajaran\ModulPlayer;
 use App\Livewire\Pembelajaran\PenilaianLaporan;
 use App\Livewire\Pembelajaran\PenilaianRunner;
 use App\Livewire\Pembelajaran\RefleksiPage;
@@ -44,10 +47,15 @@ Route::get('/files/user/{userId}/foto', [FileController::class, 'showUserFoto'])
 Route::get('/files/soal/{soalId}/gambar', [FileController::class, 'showSoalImage'])->name('files.soal.gambar');
 Route::get('/files/kuis/pertanyaan/{itemPertanyaanId}/gambar', [FileController::class, 'showItemPertanyaanImage'])->name('kuis.item-pertanyaan.gambar');
 Route::get('/files/kuis/jawaban/{itemJawabanId}/gambar', [FileController::class, 'showItemJawabanImage'])->name('kuis.item-jawaban.gambar');
+Route::get('/files/pulau/{modulId}/gambar', [FileController::class, 'showPulauImage'])->name('modul.pulau.gambar');
 
 // Grup rute untuk pengguna yang sudah terotentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/manajemen-modul', ModulIndex::class)->name('modul.index')->middleware('role:Admin');
+    Route::get('/manajemen-modul/{modul}/langkah', LangkahManager::class)
+        ->name('modul.langkah.index')
+        ->middleware('role:Admin');
     Route::get('/sekolah', SekolahIndex::class)->name('sekolah.index')->middleware('role:Admin');
     Route::get('/kelas', KelasIndex::class)->name('kelas.index')->middleware('role:Admin');
     Route::get('/users', UserIndex::class)->name('users.index')->middleware('role:Admin');
@@ -61,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/manajemen-kuis/{kuisMenjodohkan}/items', KuisItemManager::class)
         ->name('kuis.items.index')
         ->middleware('role:Admin');
+    Route::get('/laporan/jawaban-esai', JawabanEsai::class)->name('laporan.esai')->middleware('role:Admin,Guru');
     Route::get('/hasil-kuis', KuisHasil::class)->name('kuis.hasil');
 
     // Rute untuk halaman lobi/capaian pembelajaran
@@ -69,9 +78,7 @@ Route::middleware('auth')->group(function () {
     // RUTE BARU UNTUK HALAMAN PETA
     Route::get('/peta-petualangan', PetaPetualanganPage::class)->name('peta-petualangan');
     Route::prefix('pembelajaran')->name('pembelajaran.')->group(function () {
-        Route::get('/video/{pulau}', VideoPage::class)->name('video');
-        Route::get('/materi/{pulau}', MateriPage::class)->name('materi');
-        Route::get('/refleksi/{pulau}', RefleksiPage::class)->name('refleksi');
+        Route::get('/modul/{modul}', ModulPlayer::class)->name('modul.player');
     });
     Route::get('/laporan-penilaian/{pulau}', PenilaianLaporan::class)
         ->name('penilaian.laporan')

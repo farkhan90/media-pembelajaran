@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\ItemJawaban;
 use App\Models\ItemPertanyaan;
+use App\Models\Modul;
 use App\Models\Sekolah;
 use App\Models\Soal;
 use App\Models\User;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -100,5 +102,18 @@ class FileController extends Controller
         }
 
         return Storage::response($item->konten);
+    }
+
+    public function showPulauImage(string $modulId)
+    {
+        $modul = Modul::findOrFail($modulId);
+
+        if (!$modul->gambar_pulau || !Storage::exists($modul->gambar_pulau)) {
+            // Tampilkan placeholder jika tidak ada gambar
+            // Pastikan Anda punya file ini di public/assets/img/
+            return response()->file(public_path('assets/img/placeholder-peta.png'));
+        }
+
+        return Storage::response($modul->gambar_pulau);
     }
 }

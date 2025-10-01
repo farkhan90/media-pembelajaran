@@ -4,7 +4,7 @@ namespace App\Livewire\Pembelajaran;
 
 use App\Models\HistoriUjian;
 use App\Models\KuisMenjodohkan;
-use App\Models\ProgresPulauSiswa;
+use App\Models\ProgresLangkah;
 use App\Models\Ujian;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -15,66 +15,45 @@ use Livewire\Component;
 class PenilaianRunner extends Component
 {
     public string $pulau;
-    public string $tahap;
+    public string $langkahId;
+    public string $ujianPilganId;
+    public string $kuisMenjodohkanId;
 
+    public string $tahap = 'mulai';
     public ?Ujian $ujianPilgan = null;
     public ?KuisMenjodohkan $kuisMenjodohkan = null;
     public ?string $historiUjianId = null;
 
-    public function mount(string $pulau, string $tahap = 'mulai', ?string $data = null)
+    public function mount(string $pulau, string $langkahId, string $ujianPilganId, string $kuisMenjodohkanId)
     {
         $this->pulau = $pulau;
-        $this->tahap = $tahap;
-
-        // Selalu muat data ujian/kuis yang relevan di awal
-        $this->ujianPilgan = Ujian::where('status', 'Published')
-            ->latest()
-            ->first();
-        $this->kuisMenjodohkan = KuisMenjodohkan::where('status', 'Published')
-            ->latest()
-            ->first();
-
-        // Tangani routing internal (jika pengguna me-refresh di tengah jalan)
-        if ($tahap === 'pilgan' && $data) {
-            $this->ujianPilgan = Ujian::findOrFail($data);
-        } elseif ($tahap === 'menjodohkan' && $data) {
-            $this->historiUjianId = $data;
-        }
+        $this->langkahId = $langkahId;
+        $this->ujianPilganId = $ujianPilganId;
+        $this->kuisMenjodohkanId = $kuisMenjodohkanId;
     }
 
     public function mulaiPenilaian()
     {
+        $this->ujianPilgan = Ujian::find($this->ujianPilganId);
         if (!$this->ujianPilgan) {
-            $this->dispatch('swal', ['title' => 'Oops!', 'text' => 'Ujian Pilihan Ganda belum siap.', 'icon' => 'warning']);
+            $this->dispatch('swal', ['title' => 'Oops!', 'text' => 'Ujian Pilihan Ganda untuk penilaian ini belum disiapkan.', 'icon' => 'error']);
             return;
         }
         $this->tahap = 'pilgan';
     }
 
-    // Menangkap event dari komponen Ujian/Pengerjaan
     #[On('ujianPilganSelesai')]
     public function handleUjianPilganSelesai($historiId)
     {
-        // Pengaman: Jika objek kuis hilang, muat ulang.
+        $this->historiUjianId = $historiId;
+        $this->kuisMenjodohkan = KuisMenjodohkan::find($this->kuisMenjodohkanId);
         if (!$this->kuisMenjodohkan) {
-            $this->kuisMenjodohkan = KuisMenjodohkan::where('status', 'Published')
-                ->latest()
-                ->first();
-        }
-
-        // Jika setelah dimuat ulang tetap tidak ada, beri tahu pengguna.
-        if (!$this->kuisMenjodohkan) {
-            $this->dispatch('swal', ['title' => 'Oops!', 'text' => 'Kuis Menjodohkan belum siap untuk kelasmu. Hubungi gurumu!', 'icon' => 'warning']);
-            // Hentikan alur di sini agar tidak error
-            $this->tahap = 'selesai'; // atau tahap error
+            $this->dispatch('swal', ['title' => 'Oops!', 'text' => 'Kuis Menjodohkan untuk penilaian ini belum disiapkan.', 'icon' => 'error']);
             return;
         }
-
-        $this->historiUjianId = $historiId;
-        $this->tahap = 'menjodohkan'; // Lanjut ke tahap berikutnya
+        $this->tahap = 'menjodohkan';
     }
 
-    // Menangkap event dari komponen KuisMenjodohkan/Pengerjaan
     #[On('kuisMenjodohkanSelesai')]
     public function handleKuisMenjodohkanSelesai($historiKuisId, $skorKuis)
     {
@@ -82,16 +61,18 @@ class PenilaianRunner extends Component
         $skorUjian = HistoriUjian::find($this->historiUjianId)->skor_akhir ?? 0;
         $skorAkumulasi = ($skorUjian + $skorKuis) / 2;
 
-        ProgresPulauSiswa::updateOrCreate(
-            ['user_id' => $user->id, 'nama_pulau' => 'papua'],
+        // Simpan progres ke tabel progres_langkahs, tandai langkah ini selesai
+        ProgresLangkah::updateOrCreate(
+            ['user_id' => $user->id, 'langkah_id' => $this->langkahId],
             [
+                'status' => 'selesai',
                 'waktu_selesai' => now(),
                 'histori_ujian_id' => $this->historiUjianId,
                 'histori_kuis_id' => $historiKuisId,
-                'skor_akumulasi' => $skorAkumulasi,
             ]
         );
 
+        // Tampilkan hasil dan arahkan ke halaman selamat/peta
         $this->dispatch('kuis-telah-selesai', [
             'title' => 'Selamat, Petualangan Selesai!',
             'text' => 'Skor akhir gabunganmu adalah: ' . round($skorAkumulasi, 2),
