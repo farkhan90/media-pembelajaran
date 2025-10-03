@@ -22,12 +22,9 @@ use App\Livewire\KuisMenjodohkan\Daftar as KuisDaftar;
 use App\Livewire\KuisMenjodohkan\Hasil as KuisHasil;
 use App\Livewire\Laporan\JawabanEsai;
 use App\Livewire\Modul\LangkahManager;
-use App\Livewire\Pembelajaran\MateriPage;
 use App\Livewire\Pembelajaran\ModulPlayer;
-use App\Livewire\Pembelajaran\PenilaianLaporan;
 use App\Livewire\Pembelajaran\PenilaianRunner;
-use App\Livewire\Pembelajaran\RefleksiPage;
-use App\Livewire\Pembelajaran\VideoPage;
+use App\Livewire\Pembelajaran\PetualanganSelesai;
 use App\Livewire\WelcomePage;
 use App\Livewire\SelamatDatangPage;
 use App\Livewire\PetaPetualanganPage;
@@ -80,9 +77,6 @@ Route::middleware('auth')->group(function () {
     Route::prefix('pembelajaran')->name('pembelajaran.')->group(function () {
         Route::get('/modul/{modul}', ModulPlayer::class)->name('modul.player');
     });
-    Route::get('/laporan-penilaian/{pulau}', PenilaianLaporan::class)
-        ->name('penilaian.laporan')
-        ->middleware('role:Admin,Guru');
     Route::get('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
@@ -92,5 +86,5 @@ Route::middleware(['auth', 'role:Siswa'])->group(function () {
     Route::get('/kerjakan-ujian/{ujian}', UjianPengerjaan::class)->name('ujian.kerjakan');
     Route::get('/kuis', KuisDaftar::class)->name('kuis.list');
     Route::get('/kerjakan-kuis/{kuisMenjodohkan}', KuisPengerjaan::class)->name('kuis.kerjakan');
-    Route::get('/penilaian-akhir/{pulau}', PenilaianRunner::class)->name('penilaian.runner');
+    Route::get('/petualangan-selesai', PetualanganSelesai::class)->name('petualangan.selesai');
 });

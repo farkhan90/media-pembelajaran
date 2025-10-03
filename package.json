@@ -16,6 +16,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "canvas-confetti": "^1.9.3",
         "chart.js": "^4.5.0",
         "gsap": "^3.13.0",
         "split-type": "^0.3.4",

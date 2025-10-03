@@ -53,16 +53,10 @@ window.addEventListener("ujian-telah-selesai", (event) => {
         // Konfigurasi tambahan
         allowOutsideClick: true, // Izinkan klik di luar untuk menutup
         confirmButtonText: "OK",
-    }).then((result) => {
-        // Redirect akan terjadi setelah dialog ditutup,
-        // baik dengan klik OK, tombol Esc, atau klik di luar.
-        window.location.href = event.detail[0].redirectUrl;
     });
 });
 
 // resources/js/app.js
-
-// ... (listener swal, swal:confirm, dan ujian-telah-selesai yang sudah ada) ...
 
 // LISTENER BARU UNTUK KUIS SELESAI
 window.addEventListener("kuis-telah-selesai", (event) => {
@@ -72,9 +66,6 @@ window.addEventListener("kuis-telah-selesai", (event) => {
         icon: event.detail[0].icon,
         allowOutsideClick: true,
         confirmButtonText: "OK",
-    }).then(() => {
-        // Redirect setelah dialog ditutup
-        window.location.href = event.detail[0].redirectUrl;
     });
 });
 

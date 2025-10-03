@@ -196,7 +196,7 @@
                     <div x-ref="islands" x-cloak>
                         @php
                             // Dapatkan data status sekali saja di awal untuk efisiensi
-                            $statusPulau = $this->pulauStatus();
+                            $statusPulau = $this->modulStatus();
                         @endphp
 
                         {{-- Lakukan perulangan pada data modul dari komponen PHP --}}
@@ -209,12 +209,12 @@
                                 // Definisikan posisi & ukuran secara manual berdasarkan urutan.
                                 // CATATAN: Cara terbaik adalah menyimpan ini di database dalam tabel 'moduls'.
                                 $styles = [
-                                    1 => ['posisi' => 'top: 10%; left: 0%;', 'lebar' => 'w-[19%]'],
-                                    2 => ['posisi' => 'top: 0%; left: 33%;', 'lebar' => 'w-[20%]'],
-                                    3 => ['posisi' => 'top: 59%; left: 6%;', 'lebar' => 'w-[24%]'],
-                                    4 => ['posisi' => 'top: 3.5%; left: 66.7%;', 'lebar' => 'w-[16%]'],
-                                    5 => ['posisi' => 'top: 72%; left: 44%;', 'lebar' => 'w-[16.6%]'],
-                                    6 => ['posisi' => 'top: 61%; right: 0%;', 'lebar' => 'w-[25%]'],
+                                    1 => ['posisi' => 'top: 30%; left: 0%;', 'lebar' => 'w-[19%]'],
+                                    2 => ['posisi' => 'top: 0%; left: 26.9%;', 'lebar' => 'w-[24%]'],
+                                    3 => ['posisi' => 'bottom: 0%; left: 18%;', 'lebar' => 'w-[19.6%]'],
+                                    4 => ['posisi' => 'bottom: 0%; left: 47.2%;', 'lebar' => 'w-[26.2%]'],
+                                    5 => ['posisi' => 'top: 0%; left: 58.8%;', 'lebar' => 'w-[18.7%]'],
+                                    6 => ['posisi' => 'top: 30%; right: 0%;', 'lebar' => 'w-[18.5%]'],
                                 ];
 
                                 $style = $styles[$modul->urutan] ?? [

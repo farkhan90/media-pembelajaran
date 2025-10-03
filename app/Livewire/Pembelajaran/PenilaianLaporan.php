@@ -2,127 +2,87 @@
 
 namespace App\Livewire\Pembelajaran;
 
-use App\Models\ProgresPulauSiswa;
+use App\Models\Langkah;
+use App\Models\ProgresLangkah;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Layout('components.layouts.guest')]
+// HAPUS SEMUA ATRIBUT LAYOUT DARI SINI
 class PenilaianLaporan extends Component
 {
     use WithPagination;
 
-    public string $pulau;
-    public array $headers;
+    // Properti ini akan di-pass dari ModulPlayer
+    public Langkah $langkah;
 
+    // Properti internal
+    public array $headers;
     public Collection $podiumSiswa;
 
-    public function mount(string $pulau)
+    // mount() sekarang hanya bertugas menyiapkan header
+    public function mount()
     {
-        $this->pulau = $pulau;
-
         $this->headers = [
             ['key' => 'peringkat', 'label' => 'Peringkat', 'class' => 'w-1'],
             ['key' => 'user.nama', 'label' => 'Nama Siswa'],
         ];
 
-        // Tambahkan kolom sekolah & kelas HANYA untuk Admin
         if (Auth::user()->role === 'Admin') {
             $this->headers[] = ['key' => 'user.kelas_info', 'label' => 'Kelas / Sekolah'];
         }
 
-        // Tambahkan sisa kolom
         $this->headers = array_merge($this->headers, [
             ['key' => 'skor_akumulasi', 'label' => 'Skor Akhir', 'class' => 'w-24 text-center'],
             ['key' => 'waktu_selesai', 'label' => 'Waktu Selesai'],
         ]);
     }
 
-    #[Computed]
-    public function getPeringkatData()
-    {
-        $user = Auth::user();
-        $query = ProgresPulauSiswa::query()
-            ->where('nama_pulau', $this->pulau)
-            ->whereNotNull('skor_akumulasi')
-            ->with(['user.kelas.sekolah']);
-
-        if ($user->role === 'Guru') {
-            // 1. Dapatkan daftar ID siswa dari kelas yang diampu guru
-            $siswaIds = User::whereHas('kelas', function ($query) use ($user) {
-                $query->where('guru_pengampu_id', $user->id);
-            })->pluck('users.id');
-
-            // 2. Filter progres berdasarkan daftar ID siswa tersebut
-            $query->whereIn('user_id', $siswaIds);
-        }
-
-        // Ambil SEMUA data, jangan paginate di sini
-        return $query->orderBy('skor_akumulasi', 'desc')
-            ->orderBy('waktu_selesai', 'asc')
-            ->get();
-    }
-
-    public function setupPeringkat()
-    {
-        $allPeringkat = $this->getPeringkatData();
-
-        // Ambil 3 teratas untuk podium
-        $this->podiumSiswa = $allPeringkat->take(3);
-
-        // Ambil sisanya untuk tabel dan buat paginasi manual
-        $sisaPeringkat = $allPeringkat->slice(3);
-
-        // Dapatkan halaman saat ini dari query string
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 15; // Berapa item per halaman tabel
-
-        // Buat instance paginator secara manual
-        return new LengthAwarePaginator(
-            $sisaPeringkat->forPage($currentPage, $perPage), // Item untuk halaman ini
-            $sisaPeringkat->count(), // Total item
-            $perPage,
-            $currentPage,
-            ['path' => LengthAwarePaginator::resolveCurrentPath()] // Path URL
-        );
-    }
-
-    #[Computed]
-    public function peringkatSiswa()
+    private function getAllPeringkatData(): Collection
     {
         $user = Auth::user();
 
-        $query = ProgresPulauSiswa::query()
-            ->where('nama_pulau', $this->pulau)
-            ->whereNotNull('skor_akumulasi')
-            ->with(['user.kelas.sekolah']);
+        $query = ProgresLangkah::query()
+            ->where('langkah_id', $this->langkah->id)
+            ->whereNotNull('histori_ujian_id')
+            ->with(['user.kelas.sekolah', 'historiUjian', 'historiKuis']);
 
         if ($user->role === 'Guru') {
-            // 1. Dapatkan daftar ID siswa dari kelas yang diampu guru
-            $siswaIds = User::whereHas('kelas', function ($query) use ($user) {
-                $query->where('guru_pengampu_id', $user->id);
-            })->pluck('users.id');
-
-            // 2. Filter progres berdasarkan daftar ID siswa tersebut
+            $siswaIds = User::whereHas('kelas', fn($q) => $q->whereIn('kelas.id', $user->kelasDiampu->pluck('id')))->pluck('users.id');
             $query->whereIn('user_id', $siswaIds);
         }
 
-        return $query->orderBy('skor_akumulasi', 'desc')
-            ->orderBy('waktu_selesai', 'asc')
-            ->paginate(20);
+        return $query->get()->map(function ($progres) {
+            $skorUjian = $progres->historiUjian?->skor_akhir ?? 0;
+            $skorKuis = $progres->historiKuis?->skor_akhir ?? 0;
+            $progres->skor_akumulasi = ($skorUjian + $skorKuis) / 2;
+            return $progres;
+        })->sortByDesc('skor_akumulasi')->values();
     }
 
     public function render()
     {
-        $peringkatTabel = $this->setupPeringkat();
+        $allPeringkat = $this->getAllPeringkatData();
+
+        $this->podiumSiswa = $allPeringkat->take(3);
+        $sisaPeringkat = $allPeringkat->slice(3);
+
+        $currentPage = LengthAwarePaginator::resolveCurrentPage('page');
+        $perPage = 15;
+        $peringkatTabel = new LengthAwarePaginator(
+            $sisaPeringkat->forPage($currentPage, $perPage),
+            $sisaPeringkat->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'pageName' => 'page']
+        );
 
         return view('livewire.pembelajaran.penilaian-laporan', [
-            'peringkatTabel' => $peringkatTabel // Kirim data tabel ke view
+            'peringkatTabel' => $peringkatTabel
         ]);
     }
 }

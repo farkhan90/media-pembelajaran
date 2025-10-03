@@ -12,21 +12,24 @@ use Livewire\Component;
 #[Layout('components.layouts.guest')]
 class PetaPetualanganPage extends Component
 {
-    public array $progresSiswa = []; // Tetap array dari nama_pulau
+    public ?string $progresModulTerakhir = null; // Tetap array dari nama_pulau
 
     public function mount()
     {
         if (Auth::user()->role === 'Siswa') {
             // Kita tidak lagi butuh progres per pulau, tapi per langkah
             // Mari kita ambil langkah terakhir yang diselesaikan
-            $langkahSelesai = ProgresLangkah::where('user_id', Auth::id())
+            $progresTerakhir = ProgresLangkah::where('user_id', Auth::id())
                 ->join('langkahs', 'progres_langkahs.langkah_id', '=', 'langkahs.id')
-                ->orderBy('langkahs.urutan', 'desc')
                 ->join('moduls', 'langkahs.modul_id', '=', 'moduls.id')
                 ->orderBy('moduls.urutan', 'desc')
-                ->first('moduls.nama_pulau');
+                ->orderBy('langkahs.urutan', 'desc')
+                ->select('moduls.nama_pulau') // Hanya pilih kolom yang kita butuhkan
+                ->first();
 
-            $this->progresSiswa['pulau_terakhir'] = $langkahSelesai?->nama_pulau;
+            // Gunakan nullsafe operator (?) untuk mengakses properti dengan aman.
+            // Jika $progresTerakhir adalah null, $this->progresModulTerakhir juga akan menjadi null.
+            $this->progresModulTerakhir = $progresTerakhir?->nama_pulau;
         }
     }
 
@@ -38,28 +41,33 @@ class PetaPetualanganPage extends Component
     }
 
     #[Computed]
-    public function pulauStatus(): array
+    public function modulStatus(): array
     {
         $user = Auth::user();
-        $urutanPulau = $this->moduls()->pluck('nama_pulau')->toArray();
+        // 1. Dapatkan daftar nama modul secara dinamis dari database
+        $urutanModulDariDb = $this->moduls()->pluck('nama_pulau')->toArray();
 
-        // Mode Jelajah Bebas
+        // Mode Jelajah Bebas untuk Admin, Guru, atau siswa yang sudah tamat
         if (in_array($user->role, ['Admin', 'Guru']) || $this->isPetualanganSelesai()) {
-            return array_fill_keys($urutanPulau, 'terbuka');
+            // Gunakan daftar dinamis ini
+            return array_fill_keys($urutanModulDariDb, 'terbuka');
         }
 
-        // Mode Petualangan
+        // Mode Petualangan Siswa
         $status = [];
-        $progresTerakhir = $this->progresSiswa['pulau_terakhir'] ?? null;
-        $progresIndex = is_null($progresTerakhir) ? -1 : array_search($progresTerakhir, $urutanPulau);
+        $progresTerakhir = $this->progresModulTerakhir; // Properti ini sudah diisi di mount()
 
-        foreach ($urutanPulau as $index => $pulau) {
+        // Gunakan daftar dinamis ini untuk mencari
+        $progresIndex = is_null($progresTerakhir) ? -1 : array_search($progresTerakhir, $urutanModulDariDb);
+
+        // Loop pada daftar dinamis ini
+        foreach ($urutanModulDariDb as $index => $namaModul) {
             if ($index <= $progresIndex) {
-                $status[$pulau] = 'selesai';
+                $status[$namaModul] = 'terbuka';
             } elseif ($index === $progresIndex + 1) {
-                $status[$pulau] = 'aktif';
+                $status[$namaModul] = 'aktif';
             } else {
-                $status[$pulau] = 'terkunci';
+                $status[$namaModul] = 'terkunci';
             }
         }
 
@@ -72,12 +80,17 @@ class PetaPetualanganPage extends Component
         $modulTerakhir = $this->moduls()->last();
         if (!$modulTerakhir) return false;
 
-        $langkahTerakhir = $modulTerakhir->langkahs()->orderBy('urutan', 'desc')->first();
-        if (!$langkahTerakhir) return false;
+        // Periksa apakah modul terakhir ada di dalam daftar progres
+        $progresSiswa = ProgresLangkah::where('user_id', Auth::id())
+            ->join('langkahs', 'progres_langkahs.langkah_id', '=', 'langkahs.id')
+            ->where('langkahs.modul_id', $modulTerakhir->id)
+            ->pluck('langkahs.urutan');
 
-        return ProgresLangkah::where('user_id', Auth::id())
-            ->where('langkah_id', $langkahTerakhir->id)
-            ->exists();
+        $langkahTerakhirUrutan = $modulTerakhir->langkahs()->max('urutan');
+
+        // Selesai jika jumlah progres di modul terakhir sama dengan jumlah langkah total,
+        // DAN langkah dengan urutan tertinggi sudah diselesaikan.
+        return $progresSiswa->count() === $modulTerakhir->langkahs()->count() && $progresSiswa->contains($langkahTerakhirUrutan);
     }
 
     public function getLinkForPulau(string $modulId): string

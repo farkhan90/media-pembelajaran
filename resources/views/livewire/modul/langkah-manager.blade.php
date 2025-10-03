@@ -107,15 +107,6 @@
                     </div>
                 @endif
 
-                @if ($tipe === 'penilaian_akhir')
-                    <div class="space-y-4">
-                        <x-select label="Pilih Ujian Pilihan Ganda" :options="$this->ujianOptions()" wire:model="ujian_id"
-                            option-value="id" option-label="judul" />
-                        <x-select label="Pilih Kuis Menjodohkan" :options="$this->kuisOptions()" wire:model="kuis_menjodohkan_id"
-                            option-value="id" option-label="judul" />
-                    </div>
-                @endif
-
                 <hr class="my-4">
 
                 {{-- KONDISI SELESAI DINAMIS --}}

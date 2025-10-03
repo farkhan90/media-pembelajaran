@@ -1,5 +1,4 @@
-<div class="w-full min-h-screen p-4 md:p-8 font-sans bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100"
-    {{-- Jika ingin pakai gambar: --}} {{-- style="background-image: url('{{ asset('assets/img/backgrounds/confetti-bg.jpg') }}');" --}}>
+<div class="w-full min-h-screen p-4 md:p-8 font-sans bg-gradient-to-br" {{-- Jika ingin pakai gambar: --}} {{-- style="background-image: url('{{ asset('assets/img/backgrounds/confetti-bg.jpg') }}');" --}}>
     {{-- Kontainer Utama --}}
     <div class="max-w-5xl mx-auto" x-data x-init="gsap.from($el, { y: 50, opacity: 0, duration: 1, ease: 'power2.out' })">
         {{-- HEADER HALAMAN --}}
@@ -9,12 +8,6 @@
                 style="-webkit-text-stroke: 1px #FBBF24; text-stroke: 1px #FBBF24;">
                 Papan Peringkat Petualangan
             </h1>
-            <p class="text-gray-600 text-lg mt-2">Pulau Papua - Penilaian Akhir</p>
-            <div class="mt-6">
-                <a href="{{ route('peta-petualangan') }}" wire:navigate>
-                    <x-button label="Kembali ke Peta" icon="o-arrow-left" class="btn-ghost" />
-                </a>
-            </div>
         </div>
 
         @if ($this->podiumSiswa->isNotEmpty())
@@ -74,8 +67,6 @@
                     @scope('cell_user.nama', $progres)
                         {{ $progres->user->nama }}
                     @endscope
-
-                    {{-- ... sisa scope ... --}}
 
                 </x-table>
             </div>

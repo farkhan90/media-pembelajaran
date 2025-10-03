@@ -4,11 +4,13 @@
         <header class="bg-white shadow-md p-4 flex-shrink-0 z-10">
             <div class="max-w-5xl mx-auto"> {{-- Batasi lebar header --}}
                 {{-- Baris Atas: Judul & Tombol Kembali --}}
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-sm text-gray-500">Petualangan di Pulau {{ Str::ucfirst($modul->nama_pulau) }}</p>
-                        <h1 class="text-2xl font-bold text-gray-800">{{ $modul->judul }}</h1>
-                    </div>
+                <div class="flex items-center gap-2">
+                    {{-- Tombol "Ulangi" hanya muncul untuk siswa dan jika modul sudah selesai --}}
+                    @if (auth()->user()->role === 'Siswa' && $semuaSelesai)
+                        <x-button label="Ulangi Modul" icon="o-arrow-path" class="btn-sm btn-ghost text-red-500"
+                            wire:click="ulangiModul" spinner />
+                    @endif
+
                     <a href="{{ route('peta-petualangan') }}" wire:navigate class="btn btn-ghost">
                         <x-icon name="o-map" class="w-5 h-5" />
                         Kembali ke Peta
@@ -33,7 +35,7 @@
                                 $isSelesai = $langkahSelesaiIds->contains($langkah->id);
                                 $isAktif = $langkahAktif && $langkahAktif->id === $langkah->id;
                                 $isGuruAdmin = in_array(auth()->user()->role, ['Admin', 'Guru']);
-                                $isClickable = $isSelesai || $isGuruAdmin;
+                                $isClickable = $isSelesai || $isGuruAdmin || $semuaSelesai;
                             @endphp
 
                             {{-- Lingkaran Status Ikon --}}
@@ -43,8 +45,9 @@
                                     'bg-primary text-white ring-4 ring-primary/30 scale-110' => $isAktif,
                                     'bg-success text-white' => $isSelesai && !$isAktif,
                                     'bg-gray-200 text-gray-400' => !$isSelesai && !$isAktif,
-                                    'cursor-pointer hover:scale-110' => $isClickable && !$isAktif,
-                                    'cursor-not-allowed opacity-60' => !$isClickable && !$isAktif,
+                                    'cursor-pointer' => $isGuruAdmin || $isSelesai,
+                                    'cursor-not-allowed opacity-60' =>
+                                        !$isGuruAdmin && !$isSelesai && !$isAktif,
                                 ]) tooltip-bottom="{{ $langkah->judul }}"
                                 {{-- Tooltip --}}>
                                 @if ($isSelesai)
@@ -82,7 +85,7 @@
         {{-- ======================================================= --}}
         <main class="flex-grow overflow-y-auto p-4">
             <div class="max-w-5xl mx-auto">
-                @if (!$semuaSelesai && $langkahAktif)
+                @if ($langkahAktif && !$semuaSelesai)
                     <div wire:key="langkah-{{ $langkahAktif->id }}" class="mx-auto" x-data x-init="gsap.from($el, { opacity: 0, y: 20, duration: 0.5, ease: 'power2.out' })">
                         @php
                             $kondisi = $langkahAktif->kondisi_selesai ?? ['tipe' => 'manual'];
@@ -148,7 +151,9 @@
                                         </video>
                                     </div>
                                     @if ($langkahAktif->keterangan)
-                                        <p class="text-gray-600 mb-4">{{ $langkahAktif->keterangan }}</p>
+                                        <h3 class="text-xl font-bold m-2 text-gray-800">Sumber <a
+                                                href="{{ $langkahAktif->keterangan }}" target="_blank">Klik Disini</a>
+                                        </h3>
                                     @endif
                                 @elseif ($langkahAktif->tipe === 'audio')
                                     <div class="flex flex-col items-center justify-center">
@@ -284,10 +289,17 @@
                                     </div>
                                 @endif
                             </div>
-
                             {{-- VIEWER: SOAL ESAI --}}
                         @elseif($langkahAktif->tipe === 'soal_esai')
-                            <x-card :title="$langkahAktif->judul" icon="o-pencil-square" shadow>
+                            <x-card icon="o-pencil-square" shadow>
+                                <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ $langkahAktif->judul }}</h2>
+                                @if ($langkahAktif->keterangan)
+                                    <div class="flex justify-center mb-1">
+                                        <img src="{{ asset('assets/img/soal/' . $langkahAktif->keterangan) }}"
+                                            alt="{{ $langkahAktif->judul }}"
+                                            class="w-full md:w-2/3 rounded-lg object-contain shadow-lg">
+                                    </div>
+                                @endif
                                 <div
                                     class="prose max-w-none mb-6 prose-ul:list-disc prose-ol:list-decimal prose-li:pl-6">
                                     {!! $langkahAktif->konten_teks !!}
@@ -303,12 +315,26 @@
 
                             {{-- VIEWER: PENILAIAN AKHIR --}}
                         @elseif($langkahAktif->tipe === 'penilaian_akhir')
-                            {{-- Komponen runner tidak memerlukan tombol "Lanjut" eksternal --}}
-                            <livewire:pembelajaran.penilaian-runner />
+                            {{-- ============================================= --}}
+                            {{--         TAMPILAN UNTUK ADMIN DAN GURU         --}}
+                            {{-- ============================================= --}}
+                            @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
+                                {{-- Pastikan semua properti yang dibutuhkan oleh PenilaianLaporan di-pass --}}
+                                <livewire:pembelajaran.penilaian-laporan :langkah="$langkahAktif"
+                                    wire:key="'laporan-'.$langkahAktif->id" />
+                            @endif
+
+                            {{-- ============================================= --}}
+                            {{--            TAMPILAN UNTUK SISWA               --}}
+                            {{-- ============================================= --}}
+                            @if (auth()->user()->role === 'Siswa')
+                                <livewire:pembelajaran.penilaian-runner :pulau="$modul->nama_pulau" :langkah-id="$langkahAktif->id"
+                                    :ujian-pilgan-id="$langkahAktif->ujian_id" :kuis-menjodohkan-id="$langkahAktif->kuis_menjodohkan_id" wire:key="'runner-'.$langkahAktif->id" />
+                            @endif
                         @endif
 
                         {{-- ======================================================= --}}
-                        {{--          TOMBOL LANJUT YANG DIKONTROL INDUK           --}}
+                        {{--          TOMBOL LANJUT YANG DIKONTROL INDUK             --}}
                         {{-- ======================================================= --}}
                         @if (
                             !in_array($langkahAktif->tipe, ['soal_esai', 'penilaian_akhir']) &&
@@ -339,6 +365,8 @@
                             class="btn btn-primary mt-8 btn-lg rounded-full px-8">
                             Lanjutkan Petualangan Berikutnya!
                         </a>
+                        <x-button label="Ulangi Modul Ini" icon="o-arrow-path" class="btn-outline btn-lg"
+                            wire:click="ulangiModul" spinner="ulangiModul" />
                     </div>
                 @endif
             </div>

@@ -8,3 +8,6 @@ window.Chart = Chart;
 
 import SplitType from "split-type"; // <-- Impor dari paket npm
 window.SplitType = SplitType; // <-- Daftarkan ke window
+
+import confetti from "canvas-confetti";
+window.confetti = confetti;

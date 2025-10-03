@@ -25,7 +25,7 @@ class LangkahManager extends Component
 
     // Properti Form
     public string $judul = '';
-    public string $keterangan = '';
+    public ?string $keterangan = null;
     public string $tipe = 'video';
 
     // Izinkan properti ini menjadi null
@@ -128,6 +128,17 @@ class LangkahManager extends Component
         $validated['konten_teks'] = ($this->tipe === 'soal_esai') ? $this->konten_teks : null;
         $validated['ujian_id'] = ($this->tipe === 'penilaian_akhir') ? $this->ujian_id : null;
         $validated['kuis_menjodohkan_id'] = ($this->tipe === 'penilaian_akhir') ? $this->kuis_menjodohkan_id : null;
+
+        if ($this->tipe === 'penilaian_akhir') {
+            $ujian = Ujian::where('status', 'Published')->latest()->first();
+            $kuis = KuisMenjodohkan::where('status', 'Published')->latest()->first();
+
+            $validated['ujian_id'] = $ujian->id;
+            $validated['kuis_menjodohkan_id'] = $kuis->id;
+        } else {
+            $validated['ujian_id'] = null;
+            $validated['kuis_menjodohkan_id'] = null;
+        }
 
         // Siapkan data kondisi selesai
         $kondisi = ['tipe' => $this->kondisi_selesai_tipe];
