@@ -48,8 +48,8 @@
                     {{-- Wrapper untuk animasi stagger --}}
                     <div x-data x-init="gsap.from($el.children, { y: 30, opacity: 0, stagger: 0.15, duration: 0.8, ease: 'power2.out', delay: 0.5 })">
 
-                        <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-md">Halo, Sobat Belajar!</h1>
-                        <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg md:text-xl drop-shadow">
+                        <h1 class="text-3xl font-extrabold drop-shadow-md">Halo, Sobat Belajar!</h1>
+                        <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg 2xl:text-xl drop-shadow">
                             Kali ini kamu akan mempelajari berbagai hal yang menyenangkan, antara lain:
                         </p>
 
@@ -82,11 +82,11 @@
                                 </div>
                             </li>
                         </ol>
-                        <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg md:text-xl drop-shadow">
+                        <p class="mt-4 mb-2 max-w-2xl mx-auto text-lg 2xl:text-xl drop-shadow">
                             Dengan mempelajari ini, kamu akan semakin mengerti bahwa perbedaan itu indah dan menjadi
                             kekuatan bagi Bangsa Indonesia.
                         </p>
-                        <div class="flex mt-10 justify-center">
+                        <div class="flex mt-4 justify-center">
                             <a href="{{ route('peta-petualangan') }}" wire:navigate
                                 class="btn btn-primary btn-lg rounded-full px-10 transform hover:scale-105 transition-transform shadow-lg">
                                 Mari Berpetualang!

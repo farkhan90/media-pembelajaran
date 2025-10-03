@@ -168,7 +168,7 @@
                         delay: 0.3 // Muncul sedikit setelah pin mulai jatuh
                     });
                 }
-            });" class="w-full max-w-6xl mx-auto">
+            });" class="w-full max-w-4xl 2xl:max-w-6xl mx-auto">
                 <h1 class="font-lilita text-5xl md:text-7xl text-black text-center mb-4"
                     style="
                         -webkit-text-stroke: 2px #1E3A8A;
@@ -176,7 +176,7 @@
                         paint-order: stroke fill;
                     ">
                     {{-- Baris kedua, beri x-ref dan style berbeda --}}
-                    <span class="title-line-2 block text-xl md:text-3xl lg:text-5xl text-gray-700"
+                    <span class="title-line-2 block text-xl md:text-3xl text-gray-700"
                         style="-webkit-text-stroke: 1px #92400E; text-stroke: 1px #92400E;">
                         Ayo kita mulai petualanganmu!
                     </span>

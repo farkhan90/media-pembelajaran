@@ -1,8 +1,8 @@
 <div class="relative w-full h-screen overflow-hidden bg-cover bg-center font-sans"
     style="background-image: url('{{ asset('assets/img/backgrounds/modul-bg.png') }}');">
     <div class="relative z-10 h-full flex flex-col">
-        <header class="bg-white shadow-md p-4 flex-shrink-0 z-10">
-            <div class="max-w-5xl mx-auto"> {{-- Batasi lebar header --}}
+        <header class="bg-white shadow-md p-2 flex-shrink-0 z-10">
+            <div class="max-w-3xl 2xl:max-w-5xl mx-auto"> {{-- Batasi lebar header --}}
                 {{-- Baris Atas: Judul & Tombol Kembali --}}
                 <div class="flex items-center gap-2">
                     {{-- Tombol "Ulangi" hanya muncul untuk siswa dan jika modul sudah selesai --}}
@@ -84,7 +84,7 @@
         {{--                 AREA KONTEN UTAMA (PLAYER)              --}}
         {{-- ======================================================= --}}
         <main class="flex-grow overflow-y-auto p-4">
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-3xl 2xl:max-w-5xl mx-auto">
                 @if ($langkahAktif && !$semuaSelesai)
                     <div wire:key="langkah-{{ $langkahAktif->id }}" class="mx-auto" x-data x-init="gsap.from($el, { opacity: 0, y: 20, duration: 0.5, ease: 'power2.out' })">
                         @php
@@ -365,8 +365,10 @@
                             class="btn btn-primary mt-8 btn-lg rounded-full px-8">
                             Lanjutkan Petualangan Berikutnya!
                         </a>
-                        <x-button label="Ulangi Modul Ini" icon="o-arrow-path" class="btn-outline btn-lg"
-                            wire:click="ulangiModul" spinner="ulangiModul" />
+                        @if (auth()->user()->role === 'Siswa')
+                            <x-button label="Ulangi Modul" icon="o-arrow-path" class="btn-sm btn-ghost text-red-500"
+                                wire:click="ulangiModul" spinner />
+                        @endif
                     </div>
                 @endif
             </div>
