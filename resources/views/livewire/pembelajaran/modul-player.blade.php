@@ -314,13 +314,20 @@
                                     class="prose max-w-none mb-6 prose-ul:list-disc prose-ol:list-decimal prose-li:pl-6">
                                     {!! $langkahAktif->konten_teks !!}
                                 </div>
-                                <x-form wire:submit="tandaiLangkahSelesai">
-                                    <x-textarea label="Jawaban Anda" wire:model="jawabanEsai" rows="6" />
+                                @if (in_array(auth()->user()->role, ['Admin', 'Guru']))
                                     <x-slot:actions>
-                                        <x-button label="Kirim Jawaban & Lanjut" type="submit" class="btn-primary"
-                                            spinner="tandaiLangkahSelesai" />
+                                        <x-button label="Lanjutkan" wire:click="tandaiLangkahSelesai"
+                                            class="btn-primary btn-lg" spinner="tandaiLangkahSelesai" />
                                     </x-slot:actions>
-                                </x-form>
+                                @else
+                                    <x-form wire:submit="tandaiLangkahSelesai">
+                                        <x-textarea label="Jawaban Anda" wire:model="jawabanEsai" rows="6" />
+                                        <x-slot:actions>
+                                            <x-button label="Kirim Jawaban & Lanjut" type="submit"
+                                                class="btn-primary" spinner="tandaiLangkahSelesai" />
+                                        </x-slot:actions>
+                                    </x-form>
+                                @endif
                             </x-card>
 
                             {{-- VIEWER: PENILAIAN AKHIR --}}
@@ -352,7 +359,7 @@
                             <div class="mt-4 text-center h-16">
                                 {{-- Untuk Admin/Guru, tombol ini akan selalu aktif --}}
                                 @if ($bisaLanjut || in_array(auth()->user()->role, ['Admin', 'Guru']))
-                                    <x-button label="Langkah Berikutnya" wire:click="tandaiLangkahSelesai"
+                                    <x-button label="Lanjutkan" wire:click="tandaiLangkahSelesai"
                                         class="btn-primary btn-lg" spinner="tandaiLangkahSelesai" />
                                 @else
                                     <x-button label="Selesaikan aktivitas untuk melanjutkan..."
@@ -373,7 +380,7 @@
                             {{ Str::ucfirst($modul->nama_pulau) }}.</p>
                         <a href="{{ route('peta-petualangan') }}" wire:navigate
                             class="btn btn-primary mt-8 btn-lg rounded-full px-8">
-                            Lanjutkan Petualangan Berikutnya!
+                            Mari Ke Pulau Selanjutnya!
                         </a>
                         @if (auth()->user()->role === 'Siswa')
                             <x-button label="Ulangi Modul" icon="o-arrow-path" class="btn-sm btn-ghost text-red-500"
