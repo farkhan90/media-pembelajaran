@@ -10,6 +10,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\On;
 
 #[Layout('components.layouts.app')]
 class LangkahManager extends Component
@@ -155,6 +156,31 @@ class LangkahManager extends Component
         }
 
         $this->langkahModal = false;
+    }
+
+    #[On('delete-confirmed')]
+    public function delete(string $id)
+    {
+        $langkah = Langkah::where('id', $id)
+            ->where('modul_id', $this->modul->id)
+            ->first();
+
+        if ($langkah) {
+            $langkah->delete();
+
+            // 4. Beri feedback ke Admin
+            $this->dispatch('swal', [
+                'title' => 'Dihapus!',
+                'text' => 'Langkah pembelajaran berhasil dihapus.',
+                'icon' => 'success'
+            ]);
+        } else {
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Langkah tidak ditemukan atau Anda tidak berhak menghapusnya.',
+                'icon' => 'error'
+            ]);
+        }
     }
 
     private function resetForm()

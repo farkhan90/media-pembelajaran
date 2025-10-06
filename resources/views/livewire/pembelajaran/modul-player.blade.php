@@ -271,6 +271,11 @@
                                 @elseif($langkahAktif->tipe === 'canva')
                                     <div class="relative w-full h-0 pb-[56.25%] rounded-lg overflow-hidden shadow-lg"
                                         style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                                        @if ($langkahAktif->keterangan)
+                                            <h3 class="text-xl font-bold m-2 text-gray-800">
+                                                {{ $langkahAktif->keterangan }}
+                                            </h3>
+                                        @endif
                                         <iframe loading="lazy"
                                             style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
                                             src="{{ $langkahAktif->konten_path }}?embed"
@@ -281,6 +286,11 @@
                                 @elseif($langkahAktif->tipe === 'pdf')
                                     <div class="relative w-full h-0 pb-[56.25%] rounded-lg overflow-hidden shadow-lg"
                                         style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                                        @if ($langkahAktif->keterangan)
+                                            <h3 class="text-xl font-bold m-2 text-gray-800">
+                                                {{ $langkahAktif->keterangan }}
+                                            </h3>
+                                        @endif
                                         <iframe loading="lazy"
                                             style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
                                             src="{{ $langkahAktif->konten_path }}?embed"

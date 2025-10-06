@@ -168,7 +168,7 @@
                         delay: 0.3 // Muncul sedikit setelah pin mulai jatuh
                     });
                 }
-            });" class="w-full max-w-4xl 2xl:max-w-6xl mx-auto">
+            });" class="w-full max-h-screen xl:max-w-5xl mx-auto">
                 <h1 class="font-lilita text-5xl md:text-7xl text-black text-center mb-4"
                     style="
                         -webkit-text-stroke: 2px #1E3A8A;
@@ -263,7 +263,7 @@
                                     <x-icon name="s-map-pin"
                                         class="sign-pin w-10 h-10 mb-5 text-{{ $warna }} drop-shadow-lg" />
                                     <div
-                                        class="sign-board bg-{{ $warna }} text-white font-bold text-sm text-center px-3 py-1 rounded-md shadow-lg -mt-5 z-10">
+                                        class="sign-board bg-{{ $warna }} text-white font-bold text-xs md:text-sm text-center px-3 py-1 rounded-md shadow-lg -mt-5 z-10">
                                         {{ $modul->judul }}
                                     </div>
 

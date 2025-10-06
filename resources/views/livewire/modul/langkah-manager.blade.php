@@ -67,10 +67,15 @@
                     <x-button icon="o-pencil" wire:click="edit('{{ $langkah->id }}')" class="btn-sm btn-ghost" spinner />
                     <x-button icon="o-trash"
                         wire:click="$dispatch('swal:confirm', {
-                        title: 'Yakin ingin menghapus?',
-                        text: 'Menghapus langkah ini tidak dapat dibatalkan!',
-                        next: { event: 'delete-confirmed', params: { id: '{{ $langkah->id }}' } }
-                    })"
+                            title: 'Yakin ingin menghapus?',
+                            text: 'Menghapus langkah {{ $langkah->judul }} tidak dapat dibatalkan dan akan menghapus progres siswa terkait!',
+                            confirmButtonText: 'Ya, Hapus!',
+                            cancelButtonText: 'Batal',
+                            next: {
+                                event: 'delete-confirmed',
+                                params: { id: '{{ $langkah->id }}' }
+                            }
+                        })"
                         class="btn-sm btn-ghost text-red-500" spinner />
                 </div>
             @endscope
