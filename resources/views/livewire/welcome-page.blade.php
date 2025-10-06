@@ -241,6 +241,7 @@
             <hr class="my-4 w-1/2">
             <x-avatar :image="asset('assets/img/foto-profil2.jpg')" class="!w-32 !h-32 mb-4 ring-4 ring-primary ring-offset-2" />
             <h3 class="text-2xl font-bold">Prof. Dr. Wuri Wryandani, S.Pd, M.Pd.</h3>
+            <p class="text-gray-500">Dosen Fakultas Ilmu Pendidikan</p>
             <p class="text-gray-500">Universitas Negeri Yogyakarta</p>
             <hr class="my-4 w-1/2">
             <p class="max-w-md">Web aplikasi SIJAKA ini dikembangkan sebagai bagian dari penelitian untuk menyelesaikan
