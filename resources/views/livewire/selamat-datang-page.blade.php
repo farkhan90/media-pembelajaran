@@ -14,7 +14,7 @@
     <div class="relative z-10 h-full flex flex-col">
 
         {{-- HEADER --}}
-        <header class="flex justify-between items-center p-6 md:p-8 flex-shrink-0" {{-- flex-shrink-0 penting --}} x-data
+        <header class="flex justify-between items-center px-6 py-2 md:p-8 flex-shrink-0" {{-- flex-shrink-0 penting --}} x-data
             x-init="gsap.from($el, { y: -50, opacity: 0, duration: 1, ease: 'power2.out' })">
             {{-- Logo dengan teks hitam agar terbaca di background terang --}}
             <div class="flex items-center gap-3">
@@ -44,7 +44,7 @@
 
             <div x-data x-init="gsap.from($el, { y: 50, opacity: 0, duration: 1, ease: 'power2.out', delay: 0.5 })"
                 class="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl max-w-3xl w-full my-auto">
-                <div class="p-8 md:p-12 text-gray-800">
+                <div class="p-6 md:p-8 text-gray-800">
                     {{-- Wrapper untuk animasi stagger --}}
                     <div x-data x-init="gsap.from($el.children, { y: 30, opacity: 0, stagger: 0.15, duration: 0.8, ease: 'power2.out', delay: 0.5 })">
 
