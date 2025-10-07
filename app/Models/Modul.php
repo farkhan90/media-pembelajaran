@@ -11,6 +11,11 @@ class Modul extends Model
     use HasUuids;
     protected $guarded = [];
 
+    public function getRouteKeyName()
+    {
+        return 'nama_pulau';
+    }
+
     public function langkahs(): HasMany
     {
         return $this->hasMany(Langkah::class)->orderBy('urutan');

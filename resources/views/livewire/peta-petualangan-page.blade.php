@@ -228,7 +228,7 @@
                                 style="{{ $style['posisi'] }}" {{-- Tambahkan event listener hanya jika pulau bisa diklik --}}
                                 @if ($isClickable) @@mouseover="onIslandHover($el)"
                                 @@mouseleave="onIslandLeave($el)"
-                                @@click="onIslandClick($el, '{{ $modul->judul }}', '{{ $this->getLinkForPulau($modul->id) }}')" @endif>
+                                @@click="onIslandClick($el, '{{ $modul->judul }}', '{{ $this->getLinkForPulau($modul->nama_pulau) }}')" @endif>
                                 {{-- Gambar SVG Pulau --}}
                                 <img src="{{ route('modul.pulau.gambar', $modul->id) }}" {{-- Gunakan rute aman untuk gambar --}}
                                     alt="Pulau {{ $modul->judul }}" @class([

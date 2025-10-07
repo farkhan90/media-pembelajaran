@@ -108,9 +108,10 @@ class PetaPetualanganPage extends Component
         return $progresSiswa->count() === $modulTerakhir->langkahs()->count() && $progresSiswa->contains($langkahTerakhirUrutan);
     }
 
-    public function getLinkForPulau(string $modulId): string
+    public function getLinkForPulau(string $namaPulau): string
     {
-        return route('pembelajaran.modul.player', ['modul' => $modulId]);
+        // Laravel akan otomatis menggunakan 'nama_pulau'
+        return route('pembelajaran.modul.player', ['modul' => $namaPulau]);
     }
 
     public function render()

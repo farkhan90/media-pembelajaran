@@ -75,15 +75,6 @@ class ModulPlayer extends Component
         // Cek apakah semua langkah di modul INI sudah selesai
         $this->semuaSelesai = $this->modul->langkahs->count() > 0 && $this->modul->langkahs->count() === $this->langkahSelesaiIds->count();
 
-        if ($this->modeMengulang) {
-            // Jika mode mengulang, paksa mulai dari langkah pertama
-            $this->langkahAktif = $this->modul->langkahs->first();
-            session()->forget('mengulang_modul_id'); // Hapus session setelah digunakan
-        } else {
-            // Jika mode normal, cari langkah pertama yang belum selesai
-            $this->langkahAktif = $this->modul->langkahs->first(fn($langkah) => !$this->langkahSelesaiIds->contains($langkah->id));
-        }
-
         // Jika belum ada langkah aktif (karena semua sudah selesai), JANGAN set ke langkah terakhir.
         // Biarkan $langkahAktif null untuk sementara, view yang akan menanganinya.
         if ($this->langkahAktif) {
@@ -161,6 +152,7 @@ class ModulPlayer extends Component
 
         $this->semuaSelesai = false;
         $this->bisaLanjut = false;
+        $this->sedangMengulang = true;
         $this->reset('jawabanEsai');
 
         $this->dispatch('swal', [
@@ -246,6 +238,7 @@ class ModulPlayer extends Component
         }
 
         if ($this->semuaSelesai && $user->role === 'Siswa') {
+            $this->sedangMengulang = false;
             $this->dispatch('swal', ['title' => 'Luar Biasa!', 'text' => 'Kamu telah menyelesaikan semua tantangan di pulau ini!', 'icon' => 'success']);
         }
     }

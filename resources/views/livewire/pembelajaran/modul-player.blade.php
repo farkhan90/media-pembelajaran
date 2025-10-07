@@ -35,21 +35,28 @@
                                 $isSelesai = $langkahSelesaiIds->contains($langkah->id);
                                 $isAktif = $langkahAktif && $langkahAktif->id === $langkah->id;
                                 $isGuruAdmin = in_array(auth()->user()->role, ['Admin', 'Guru']);
-                                $isClickable = $isSelesai || $isGuruAdmin || $semuaSelesai;
+
+                                // =======================================================
+                                //          LOGIKA BARU YANG LEBIH KETAT DI SINI
+                                // =======================================================
+                                // Langkah bisa diklik JIKA:
+                                // 1. Pengguna adalah Admin/Guru, ATAU
+                                // 2. Seluruh modul sudah selesai (Mode Review untuk siswa), ATAU
+                                // 3. Langkah tersebut adalah langkah yang sedang aktif (Mode Petualangan).
+                                $isClickable = $isGuruAdmin || $isAktif || $sedangMengulang;
+                                // =======================================================
                             @endphp
 
                             {{-- Lingkaran Status Ikon --}}
                             <div @if ($isClickable) wire:click="goToLangkah('{{ $langkah->id }}')" @endif
                                 @class([
-                                    'w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition-all transform',
-                                    'bg-primary text-white ring-4 ring-primary/30 scale-110' => $isAktif,
-                                    'bg-success text-white' => $isSelesai && !$isAktif,
-                                    'bg-gray-200 text-gray-400' => !$isSelesai && !$isAktif,
-                                    'cursor-pointer' => $isGuruAdmin || $isSelesai,
-                                    'cursor-not-allowed opacity-60' =>
-                                        !$isGuruAdmin && !$isSelesai && !$isAktif,
-                                ]) tooltip-bottom="{{ $langkah->judul }}"
-                                {{-- Tooltip --}}>
+                                    'tooltip tooltip-bottom',
+                                    'flex items-center gap-3 p-3 rounded-lg transition-colors text-sm',
+                                    'bg-primary text-white shadow-md' => $isAktif,
+                                    'hover:bg-gray-100' => !$isAktif && $isClickable, // Hover hanya jika bisa diklik
+                                    'cursor-pointer' => $isClickable,
+                                    'cursor-not-allowed opacity-60' => !$isClickable, // Logika disederhanakan
+                                ]) data-tip="{{ $langkah->judul }}">
                                 @if ($isSelesai)
                                     <x-icon name="o-check" class="w-6 h-6" />
                                 @else
