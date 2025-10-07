@@ -262,8 +262,13 @@
 
                                     <x-icon name="s-map-pin"
                                         class="sign-pin w-10 h-10 mb-5 text-{{ $warna }} drop-shadow-lg" />
-                                    <div
-                                        class="sign-board bg-{{ $warna }} text-white font-bold text-xs md:text-sm text-center px-3 py-1 rounded-md shadow-lg -mt-5 z-10">
+                                    <div @class([
+                                        'sign-board text-white font-bold text-sm text-center px-3 py-1 rounded-md shadow-lg -mt-5 z-10',
+                                        'bg-primary' => $status === 'aktif',
+                                        'bg-gray-400' => $status === 'selesai',
+                                        'bg-success' => $status === 'terbuka',
+                                        'bg-gray-300' => $status === 'default',
+                                    ])>
                                         {{ $modul->judul }}
                                     </div>
 
