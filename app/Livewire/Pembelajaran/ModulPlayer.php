@@ -211,12 +211,6 @@ class ModulPlayer extends Component
                 );
             }
 
-            // =======================================================
-            //            LOGIKA PENYIMPANAN YANG DIPERBARUI
-            // =======================================================
-            // Gunakan updateOrCreate. Ini akan selalu berjalan.
-            // Jika record sudah ada, ia akan meng-update-nya.
-            // Jika belum ada, ia akan membuatnya.
             ProgresLangkah::updateOrCreate(
                 [
                     'user_id' => $user->id,
@@ -233,13 +227,13 @@ class ModulPlayer extends Component
 
             $this->reset('jawabanEsai');
 
-            // Jika ini adalah akhir petualangan, redirect ke halaman selamat
+            // Cek apakah seluruh petualangan selesai SETELAH me-refresh
             if ($this->isPetualanganSelesai()) {
                 return $this->redirect(route('petualangan.selesai'), navigate: true);
             }
 
-            // Pindah ke langkah berikutnya setelah menyimpan
-            $this->majuKeLangkahBerikutnya(true);
+            // Setelah menyimpan, panggil SATU metode untuk me-refresh semua state
+            $this->tentukanLangkahAktif();
         }
 
         $modulTerakhir = Modul::where('is_published', 1)->orderBy('urutan', 'desc')->first();
@@ -250,9 +244,6 @@ class ModulPlayer extends Component
                 return $this->redirect(route('petualangan.selesai'), navigate: true);
             }
         }
-
-        // Pindah ke langkah berikutnya untuk SEMUA peran
-        $this->majuKeLangkahBerikutnya(true);
 
         if ($this->semuaSelesai && $user->role === 'Siswa') {
             $this->dispatch('swal', ['title' => 'Luar Biasa!', 'text' => 'Kamu telah menyelesaikan semua tantangan di pulau ini!', 'icon' => 'success']);
@@ -269,32 +260,24 @@ class ModulPlayer extends Component
 
         $user = Auth::user();
 
-        $isJelajahBebas = in_array($user->role, ['Admin', 'Guru']) || $this->semuaSelesai;
+        // Otorisasi: Admin/Guru atau jika siswa sudah selesai semua, atau jika langkah target sudah selesai
+        $isAllowed = in_array($user->role, ['Admin', 'Guru'])
+            || $this->semuaSelesai
+            || $this->langkahSelesaiIds->contains($langkahId);
 
-        if ($isJelajahBebas || $this->langkahSelesaiIds->contains($langkahId)) {
-
+        if ($isAllowed) {
             $this->langkahAktif = $targetLangkah;
             $this->langkahAktifIndex = $this->modul->langkahs->search(fn($l) => $l->id === $this->langkahAktif->id);
-            $this->bisaLanjut = true;
+            $this->bisaLanjut = true; // Langsung bisa lanjut saat review
 
-            // =======================================================
-            //          LOGIKA BARU: MUAT JAWABAN YANG ADA
-            // =======================================================
-            // Jika langkah yang dituju adalah soal esai, coba muat jawabannya
             if ($targetLangkah->tipe === 'soal_esai') {
-                $progres = ProgresLangkah::where('user_id', $user->id)
-                    ->where('langkah_id', $targetLangkah->id)
-                    ->first();
-
-                // Isi properti form dengan jawaban dari database jika ada
+                $progres = ProgresLangkah::where('user_id', $user->id)->where('langkah_id', $targetLangkah->id)->first();
                 $this->jawabanEsai = $progres?->jawaban_teks ?? '';
             } else {
-                // Jika bukan soal esai, pastikan properti jawaban kosong
                 $this->reset('jawabanEsai');
             }
-            // =======================================================
-
         } else {
+            // Jika siswa mencoba klik langkah yang masih terkunci
             $this->dispatch('swal', ['title' => 'Terkunci!', 'text' => 'Kamu harus menyelesaikan langkah sebelumnya terlebih dahulu.', 'icon' => 'warning']);
         }
     }
@@ -304,16 +287,11 @@ class ModulPlayer extends Component
         $currentIndex = $this->langkahAktifIndex ?? -1;
         $nextIndex = $currentIndex + 1;
 
-        // Cek apakah masih ada langkah berikutnya di modul ini
         if ($nextIndex < $this->modul->langkahs->count()) {
+            // Cukup panggil goToLangkah, yang sudah punya otorisasi sendiri
             $this->goToLangkah($this->modul->langkahs[$nextIndex]->id);
         } else {
-            // Sudah di akhir modul
-            // Jika sedang dalam progres, cek apakah ini akhir petualangan
-            if ($dalamProgres && $this->isPetualanganSelesai()) {
-                return $this->redirect(route('petualangan.selesai'), navigate: true);
-            }
-            // Jika tidak, atau saat review, refresh state
+            // Jika sudah di akhir, panggil tentukanLangkahAktif untuk menampilkan layar "Selesai"
             $this->tentukanLangkahAktif();
         }
     }

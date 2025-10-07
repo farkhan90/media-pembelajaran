@@ -12,24 +12,45 @@ use Livewire\Component;
 #[Layout('components.layouts.guest')]
 class PetaPetualanganPage extends Component
 {
-    public ?string $progresModulTerakhir = null; // Tetap array dari nama_pulau
+    // Properti ini akan menyimpan NAMA_PULAU dari modul terakhir yang TUNTAS
+    public ?string $progresModulTuntasTerakhir = null;
 
+    /**
+     * Dijalankan saat komponen dimuat.
+     * Menganalisis progres siswa untuk menentukan modul terakhir yang tuntas.
+     */
     public function mount()
     {
         if (Auth::user()->role === 'Siswa') {
-            // Kita tidak lagi butuh progres per pulau, tapi per langkah
-            // Mari kita ambil langkah terakhir yang diselesaikan
-            $progresTerakhir = ProgresLangkah::where('user_id', Auth::id())
-                ->join('langkahs', 'progres_langkahs.langkah_id', '=', 'langkahs.id')
-                ->join('moduls', 'langkahs.modul_id', '=', 'moduls.id')
-                ->orderBy('moduls.urutan', 'desc')
-                ->orderBy('langkahs.urutan', 'desc')
-                ->select('moduls.nama_pulau') // Hanya pilih kolom yang kita butuhkan
-                ->first();
+            $user = Auth::user();
 
-            // Gunakan nullsafe operator (?) untuk mengakses properti dengan aman.
-            // Jika $progresTerakhir adalah null, $this->progresModulTerakhir juga akan menjadi null.
-            $this->progresModulTerakhir = $progresTerakhir?->nama_pulau;
+            // Ambil semua modul yang harus dikerjakan, diurutkan
+            $semuaModul = Modul::where('is_published', true)->orderBy('urutan')->with('langkahs')->get();
+
+            // Ambil semua ID langkah yang sudah diselesaikan siswa
+            $langkahSelesaiIds = ProgresLangkah::where('user_id', $user->id)->pluck('langkah_id');
+
+            // Loop melalui setiap modul untuk memeriksa status penyelesaiannya
+            foreach ($semuaModul as $modul) {
+                // Ambil semua ID langkah yang ada di modul ini
+                $langkahDiModulIds = $modul->langkahs->pluck('id');
+
+                if ($langkahDiModulIds->isEmpty()) {
+                    continue; // Lewati modul yang tidak punya langkah
+                }
+
+                // Cek apakah semua langkah di modul ini sudah diselesaikan
+                $langkahBelumSelesai = $langkahDiModulIds->diff($langkahSelesaiIds);
+
+                if ($langkahBelumSelesai->isEmpty()) {
+                    // Jika tuntas, catat sebagai progres terakhir sejauh ini
+                    $this->progresModulTuntasTerakhir = $modul->nama_pulau;
+                } else {
+                    // Begitu kita menemukan modul pertama yang belum tuntas,
+                    // kita berhenti. Progres terakhir adalah modul sebelumnya.
+                    break;
+                }
+            }
         }
     }
 
@@ -45,23 +66,17 @@ class PetaPetualanganPage extends Component
     {
         $user = Auth::user();
         // 1. Dapatkan daftar nama modul secara dinamis dari database
-        $urutanModulDariDb = $this->moduls()->pluck('nama_pulau')->toArray();
+        $urutanModul = $this->moduls()->pluck('nama_pulau')->toArray();
 
         // Mode Jelajah Bebas untuk Admin, Guru, atau siswa yang sudah tamat
         if (in_array($user->role, ['Admin', 'Guru']) || $this->isPetualanganSelesai()) {
-            // Gunakan daftar dinamis ini
-            return array_fill_keys($urutanModulDariDb, 'terbuka');
+            return array_fill_keys($urutanModul, 'terbuka');
         }
 
-        // Mode Petualangan Siswa
         $status = [];
-        $progresTerakhir = $this->progresModulTerakhir; // Properti ini sudah diisi di mount()
+        $progresIndex = is_null($this->progresModulTuntasTerakhir) ? -1 : array_search($this->progresModulTuntasTerakhir, $urutanModul);
 
-        // Gunakan daftar dinamis ini untuk mencari
-        $progresIndex = is_null($progresTerakhir) ? -1 : array_search($progresTerakhir, $urutanModulDariDb);
-
-        // Loop pada daftar dinamis ini
-        foreach ($urutanModulDariDb as $index => $namaModul) {
+        foreach ($urutanModul as $index => $namaModul) {
             if ($index <= $progresIndex) {
                 $status[$namaModul] = 'terbuka';
             } elseif ($index === $progresIndex + 1) {
