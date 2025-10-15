@@ -11,8 +11,8 @@
         {{-- Tabel untuk menampilkan daftar modul --}}
         <x-table :headers="$headers" :rows="$moduls" with-pagination>
             @scope('cell_judul', $modul)
-                <a href="{{ route('modul.langkah.index', ['modul' => $modul->id]) }}" class="font-bold hover:underline"
-                    wire:navigate>
+                <a href="{{ route('modul.langkah.index', ['modul' => $modul->nama_pulau]) }}"
+                    class="font-bold hover:underline" wire:navigate>
                     {{ $modul->judul }}
                 </a>
             @endscope
@@ -37,7 +37,7 @@
             @endscope
             @scope('actions', $modul)
                 <div class="flex items-center gap-2 justify-end">
-                    <x-button icon="o-pencil" wire:click="edit('{{ $modul->id }}')" class="btn-sm" />
+                    <x-button icon="o-pencil" wire:click="edit('{{ $modul->nama_pulau }}')" class="btn-sm" />
                     <x-button icon="o-trash"
                         wire:click="$dispatch('swal:confirm', {
                             title: 'Yakin ingin menghapus?',
@@ -46,7 +46,7 @@
                             cancelButtonText: 'Batal',
                             next: {
                                 event: 'delete-confirmed',
-                                params: { modulId: '{{ $modul->id }}' }
+                                params: { modulId: '{{ $modul->nama_pulau }}' }
                             }
                         })"
                         class="btn-sm btn-ghost text-red-500" spinner />
