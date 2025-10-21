@@ -28,6 +28,7 @@ class RegisterPage extends Component
     public string $password_guru_confirmation = '';
     public string $npsn = '';
     public string $nama_sekolah = '';
+    public string $alamat_sekolah = '';
     public $logo_sekolah;
     public string $nama_kelas = '';
     public bool $sekolahDitemukan = false;
@@ -65,10 +66,12 @@ class RegisterPage extends Component
         if ($sekolah) {
             $this->sekolahDitemukan = true;
             $this->nama_sekolah = $sekolah->nama;
+            $this->alamat_sekolah = $sekolah->alamat;
             $this->logoSekolahPreview = $sekolah->logo ? route('files.sekolah.logo', ['sekolahId' => $sekolah->id]) : null;
         } else {
             $this->sekolahDitemukan = false;
             $this->nama_sekolah = '';
+            $this->alamat_sekolah = '';
             $this->logoSekolahPreview = null;
         }
     }
@@ -94,6 +97,7 @@ class RegisterPage extends Component
             'password_guru' => ['required', 'confirmed', Password::min(8)],
             'npsn' => 'required|string|max:10',
             'nama_sekolah' => 'required|string|max:255',
+            'alamat_sekolah' => 'required|string',
             'logo_sekolah' => 'nullable|image|max:1024',
             'nama_kelas' => 'required|string|max:255',
         ]);
@@ -102,7 +106,10 @@ class RegisterPage extends Component
             // 1. Buat atau temukan Sekolah
             $sekolah = Sekolah::firstOrCreate(
                 ['npsn' => $validated['npsn']],
-                ['nama' => $validated['nama_sekolah']]
+                [
+                    'nama' => $validated['nama_sekolah'],
+                    'alamat' => $validated['alamat_sekolah']
+                ]
             );
             // Upload logo hanya jika sekolah baru
             if ($sekolah->wasRecentlyCreated && $this->logo_sekolah) {

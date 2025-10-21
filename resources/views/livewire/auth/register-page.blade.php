@@ -42,6 +42,9 @@
                         <x-file label="Logo Sekolah" wire:model="logo_sekolah" :disabled="$sekolahDitemukan" />
                     @endif
 
+                    <x-textarea label="Alamat Sekolah" wire:model="alamat_sekolah" rows="3"
+                        placeholder="Masukkan alamat lengkap sekolah..." :disabled="$sekolahDitemukan" />
+
                     <x-input label="Nama Kelas Baru yang Diampu" wire:model="nama_kelas"
                         placeholder="Contoh: Kelas 4A - Pagi" />
 
